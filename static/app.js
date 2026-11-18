@@ -872,6 +872,9 @@ function eventosDoCheckout() {
 }
 
 function eventosDoTopo() {
+  // lista os produtos sem a IA, entao funciona mesmo com o Gemini fora do ar
+  $("btn-produtos").addEventListener("click", () => executar("/api/catalogo", {}));
+
   $("btn-exportar").addEventListener("click", () => {
     if (app.sessaoId) window.location.href = `/api/conversa/exportar?sessao_id=${encodeURIComponent(app.sessaoId)}`;
   });
