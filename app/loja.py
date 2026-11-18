@@ -1,6 +1,7 @@
+import math
 import re
 import secrets
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
@@ -60,10 +61,17 @@ class Pedido:
     cliente: dict
     copia_e_cola: str
     origem: str = "conversa"
+    pago_em: datetime | None = None
+    substituido_por: str | None = None
 
     @property
     def nome_modalidade(self):
         return NOMES_MODALIDADE[self.modalidade]
+
+    def segundos_restantes(self, agora):
+        if self.status != AGUARDANDO:
+            return 0
+        return max(0, math.ceil((self.expira_em - agora).total_seconds()))
 
     def qr_code_data_uri(self):
         return segno.make(self.copia_e_cola, error="m").svg_data_uri(scale=5, border=2)
@@ -259,6 +267,7 @@ class Loja:
 
     def criar_pedido(self, sessao, dados_cliente, origem="conversa"):
         """Fecha o carrinho num pedido com PIX falso. Chat e formulario usam este mesmo metodo."""
+        self.atualizar_pedidos(sessao)
         if not sessao.itens:
             raise ErroRegra("carrinho_vazio", "O carrinho está vazio: adicione produtos antes de fechar o pedido.")
 
@@ -287,8 +296,7 @@ class Loja:
         if not totais.total_completo:
             raise ErroRegra("frete_nao_escolhido", "Não foi possível calcular o frete para fechar o pedido.")
 
-        self._ultimo_pedido += 1
-        numero = f"PH-TESTE-{self._ultimo_pedido:06d}"
+        numero = self._novo_numero()
         agora = self.agora()
         pedido = Pedido(
             numero=numero,
@@ -336,6 +344,107 @@ class Loja:
             )
         return pedido
 
+    def _novo_numero(self):
+        self._ultimo_pedido += 1
+        return f"PH-TESTE-{self._ultimo_pedido:06d}"
+
     def _reservar_estoque(self, pedido):
         for item in pedido.itens:
             self.estoque[item["produto_id"]] -= item["quantidade"]
+
+    def _devolver_estoque(self, pedido):
+        for item in pedido.itens:
+            self.estoque[item["produto_id"]] += item["quantidade"]
+
+    def atualizar_pedidos(self, sessao):
+        """Expira os PIX vencidos (so uma vez) e devolve os que acabaram de expirar."""
+        agora = self.agora()
+        expirados = []
+        for pedido in sessao.pedidos:
+            if pedido.status == AGUARDANDO and agora >= pedido.expira_em:
+                pedido.status = EXPIRADO
+                self._devolver_estoque(pedido)
+                expirados.append(pedido)
+                sessao.registrar(
+                    "sofia",
+                    f"O PIX do pedido {pedido.numero} expirou ⏰ (a validade é de {self.validade_em_texto()}). "
+                    "Quer que eu gere um novo PIX com os mesmos itens? É só me avisar aqui ou tocar em "
+                    "“Gerar novo PIX”.",
+                )
+        return expirados
+
+    def pagar_pedido(self, sessao, numero):
+        """Simula o pagamento (botao do PIX de teste)."""
+        self.atualizar_pedidos(sessao)
+        pedido = sessao.pedido(numero)
+        if pedido is None:
+            raise ErroRegra("pedido_nao_encontrado", "Não encontrei esse pedido nesta conversa.")
+        if pedido.status == PAGO:
+            return pedido
+        if pedido.status == EXPIRADO:
+            raise ErroRegra(
+                "pix_expirado",
+                f"O PIX do pedido {pedido.numero} já expirou. É preciso gerar um novo PIX.",
+            )
+        pedido.status = PAGO
+        pedido.pago_em = self.agora()
+        primeiro_nome = pedido.cliente["nome"].split()[0]
+        sessao.registrar(
+            "sofia",
+            f"Pagamento confirmado, {primeiro_nome}! 🎉 O pedido {pedido.numero}, no valor de "
+            f"{formatar(pedido.total)}, está pago (simulação: nenhum pagamento real foi feito). "
+            f"A entrega é pela modalidade {pedido.nome_modalidade}, com prazo de {pedido.prazo}. "
+            "Se quiser dicas de como usar seus produtos, é só me chamar 💜",
+        )
+        return pedido
+
+    def gerar_novo_pix(self, sessao, numero=None, origem="conversa"):
+        """Novo pedido com os mesmos itens de um pedido que expirou."""
+        self.atualizar_pedidos(sessao)
+        if numero:
+            anterior = sessao.pedido(numero)
+        else:
+            expirados = [p for p in sessao.pedidos if p.status == EXPIRADO and not p.substituido_por]
+            anterior = expirados[-1] if expirados else None
+        if anterior is None:
+            raise ErroRegra("pedido_nao_encontrado", "Não há pedido com PIX expirado nesta conversa.")
+        if anterior.status == PAGO:
+            raise ErroRegra("pedido_ja_pago", f"O pedido {anterior.numero} já está pago.")
+        if anterior.status == AGUARDANDO:
+            raise ErroRegra(
+                "pix_ainda_valido",
+                f"O PIX do pedido {anterior.numero} ainda está válido; não é preciso gerar outro.",
+            )
+        if anterior.substituido_por:
+            raise ErroRegra(
+                "pix_ja_substituido",
+                f"Esse pedido já foi substituído pelo {anterior.substituido_por}.",
+            )
+        for item in anterior.itens:
+            validar_quantidade(
+                self._produto(item["produto_id"]), item["quantidade"], self.estoque[item["produto_id"]]
+            )
+
+        numero_novo = self._novo_numero()
+        agora = self.agora()
+        novo = replace(
+            anterior,
+            numero=numero_novo,
+            status=AGUARDANDO,
+            criado_em=agora,
+            expira_em=agora + timedelta(seconds=self.validade_pix_s),
+            itens=[dict(item) for item in anterior.itens],
+            cliente=dict(anterior.cliente),
+            copia_e_cola=texto_pix_falso(numero_novo, anterior.total),
+            origem=origem,
+        )
+        self._reservar_estoque(novo)
+        anterior.substituido_por = novo.numero
+        sessao.pedidos.append(novo)
+        if origem == "botao":
+            sessao.registrar(
+                "sofia",
+                f"Novo PIX de teste gerado! Agora o pedido é o {novo.numero}, no mesmo valor de "
+                f"{formatar(novo.total)}, válido por {self.validade_em_texto()} ⏰",
+            )
+        return novo
