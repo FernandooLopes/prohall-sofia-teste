@@ -177,6 +177,21 @@ def test_alterar_e_remover_item_e_cupom_pelos_botoes():
     assert dados["estado"]["carrinho"]["vazio"] is True
 
 
+def test_catalogo_completo_sem_usar_o_gemini():
+    http, falso = cliente_http()
+    sessao, inicio = nova_sessao(http)
+    ultima = inicio["mensagens"][-1]["id"]
+    dados = http.post("/api/catalogo", json={"sessao_id": sessao, "ultima_mensagem": ultima}).json()
+    mensagem = dados["mensagens"][0]
+    assert mensagem["autor"] == "sofia" and len(mensagem["produtos"]) == 15
+    assert all(p["preco_vigente"].startswith("R$") and p["maximo"] > 0 for p in mensagem["produtos"])
+    assert falso.requisicoes == []  # nenhuma chamada ao Gemini
+    # os cards vindos daqui adicionam ao carrinho como os de sempre
+    produto = mensagem["produtos"][0]["id"]
+    dados = http.post("/api/carrinho/adicionar", json={"sessao_id": sessao, "produto_id": produto, "quantidade": 1}).json()
+    assert dados["estado"]["carrinho"]["quantidade_itens"] == 1
+
+
 def test_sessao_inexistente_devolve_404():
     http, _ = cliente_http()
     assert http.get("/api/estado", params={"sessao_id": "nao-existe"}).status_code == 404

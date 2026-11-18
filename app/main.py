@@ -12,7 +12,7 @@ from . import config
 from .apresentacao import estado_para_ui, exportar_conversa, mensagem_para_ui
 from .gemini import ClienteGemini
 from .loja import Loja
-from .prompts import SAUDACAO
+from .prompts import MENSAGEM_CATALOGO, SAUDACAO
 from .regras import ErroRegra
 from .sofia import Sofia
 
@@ -170,6 +170,12 @@ def criar_app(loja=None, gemini=None):
             return resposta_de_erro(sessao, entrada.ultima_mensagem, erro)
         extra = {"acoes": {"abrir_checkout": False, "abrir_pix": True}} if abrir_pix else {}
         return resposta(sessao, entrada.ultima_mensagem, **extra)
+
+    @app.post("/api/catalogo")
+    async def catalogo(entrada: Entrada):
+        # mostra todos os produtos sem passar pela IA: serve de plano B se o Gemini estiver fora
+        ids = [produto.id for produto in loja.catalogo.listar()]
+        return operar(entrada, lambda s: s.registrar("sofia", MENSAGEM_CATALOGO, ids))
 
     @app.post("/api/carrinho/adicionar")
     async def carrinho_adicionar(entrada: EntradaItem):

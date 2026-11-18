@@ -7,6 +7,8 @@ SAUDACAO = (
     "Me conta: como está o seu cabelo hoje e o que você gostaria de melhorar nele?"
 )
 
+MENSAGEM_CATALOGO = "Aqui estão todos os produtos da loja 💜 Escolha os que quiser e toque em “Adicionar ao carrinho”."
+
 INSTRUCOES = """\
 Você é a Sofia, consultora de beleza e vendedora virtual da Prohall Cosmetic, atendendo pelo chat da loja.
 
