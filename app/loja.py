@@ -1,3 +1,4 @@
+import asyncio
 import math
 import re
 import secrets
@@ -95,6 +96,7 @@ class Sessao:
     mensagens: list = field(default_factory=list)  # o que aparece no chat
     historico: list = field(default_factory=list)  # o que foi trocado com o Gemini
     valores_vistos: set = field(default_factory=set)  # valores em R$ que o modelo ja viu
+    trava: asyncio.Lock = field(default_factory=asyncio.Lock)  # um turno de chat por vez
     _ultima_mensagem: int = 0
 
     def registrar(self, autor, texto, produtos=None):
@@ -108,6 +110,9 @@ class Sessao:
         }
         self.mensagens.append(mensagem)
         return mensagem
+
+    def mensagens_apos(self, ultimo_id):
+        return [m for m in self.mensagens if m["id"] > ultimo_id]
 
     def pedido(self, numero):
         numero = str(numero or "").strip().upper()
