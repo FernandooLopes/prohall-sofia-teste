@@ -80,13 +80,18 @@ def validar_quantidade(produto, quantidade, estoque):
         )
 
 
-def validar_cupom(codigo, subtotal):
+def validar_codigo_cupom(codigo):
     codigo = normalizar_cupom(codigo)
     if codigo != CUPOM:
         raise ErroRegra(
             "cupom_invalido",
             f"O cupom informado não é válido. O único cupom ativo é {CUPOM}.",
         )
+    return codigo
+
+
+def validar_cupom(codigo, subtotal):
+    codigo = validar_codigo_cupom(codigo)
     if subtotal < MINIMO_CUPOM:
         falta = MINIMO_CUPOM - subtotal
         raise ErroRegra(
