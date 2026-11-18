@@ -163,6 +163,164 @@
       ],
       "modo_de_uso": "Aplicar uma pequena quantidade na palma da mão e espalhar do comprimento às pontas, evitando a raiz; finalizar como preferir.",
       "observacoes": "Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "kit-equalize",
+      "nome": "Tratamento Neutralizante de pH para Fios Quebradiços e Elásticos | Equalize",
+      "nome_curto": "Kit Equalize Neutralizante de pH",
+      "categoria": "Kit",
+      "linha": "Equalize",
+      "uso": "profissional",
+      "kit": true,
+      "preco": 285.9,
+      "preco_promocional": 119.9,
+      "peso_g": 1200,
+      "peso_estimado": false,
+      "estoque": 8,
+      "conteudo": "Kit com shampoo 300 ml, condicionador 300 ml e máscara 300 g",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/kit-reconstrutor-neutralizante-equalize-prohall-202204.jpg?v=1758595170",
+      "url": "https://lojaprohall.com.br/products/kit-reconstrutor-neutralizante-equalize-prohall",
+      "indicacao": "Todos os tipos de cabelo, especialmente fios quimicamente tratados ou com danos severos (quebradiços, elásticos) que precisam de reconstrução e neutralização do pH.",
+      "beneficios": [
+        "reequilibra o pH capilar",
+        "reconstrói a fibra danificada",
+        "controla o frizz",
+        "reduz pontas duplas",
+        "hidrata e dá maciez e brilho",
+        "limpeza suave"
+      ],
+      "ativos": [
+        "óleo de patauá",
+        "D-pantenol",
+        "queratina vegetal"
+      ],
+      "modo_de_uso": "Aplicar o shampoo no cabelo molhado e enxaguar; aplicar a máscara do comprimento às pontas, deixar agir de 5 a 10 minutos e enxaguar.",
+      "observacoes": "A página informa que os produtos são de uso profissional. Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "shampoo-force-hair-500ml",
+      "nome": "Shampoo de Crescimento Acelerado: Menos Queda e Mais Força | Force Hair 500ml",
+      "nome_curto": "Shampoo Force Hair 500ml",
+      "categoria": "Shampoo",
+      "linha": "Force Hair",
+      "uso": "profissional",
+      "kit": false,
+      "preco": 89.9,
+      "preco_promocional": 49.9,
+      "peso_g": 550,
+      "peso_estimado": false,
+      "estoque": 20,
+      "conteudo": "500 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/shampoo-de-crescimento-fortificante-force-hair-500ml-497709.jpg?v=1742474212",
+      "url": "https://lojaprohall.com.br/products/shampoo-de-crescimento-fortificante-force-hair-500ml",
+      "indicacao": "Todos os tipos de cabelo, inclusive quimicamente tratados ou em transição; foco em fios fracos, quebradiços ou com tendência à queda.",
+      "beneficios": [
+        "limpeza do couro cabeludo",
+        "fortalecimento",
+        "estímulo ao crescimento",
+        "ação antioxidante",
+        "nutrição e brilho"
+      ],
+      "ativos": [
+        "óleo de patauá",
+        "óleo de rícino",
+        "biotina (vitamina B7)",
+        "blend BeauPlex (vitaminas C, E, B3, B5 e B6)"
+      ],
+      "modo_de_uso": "Aplicar nos cabelos molhados, massagear o couro cabeludo em movimentos circulares, enxaguar e repetir se necessário.",
+      "observacoes": "A página informa que é de uso profissional. Uso externo; manter fora do alcance de crianças."
+    },
+    {
+      "id": "mascara-force-hair-500ml",
+      "nome": "Máscara Fortificante de Crescimento Acelerado: Menos Queda | Force Hair 500ml",
+      "nome_curto": "Máscara Force Hair 500ml",
+      "categoria": "Máscara",
+      "linha": "Force Hair",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 94.9,
+      "preco_promocional": 79.9,
+      "peso_g": 534,
+      "peso_estimado": false,
+      "estoque": 15,
+      "conteudo": "500 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/mascara-de-crescimento-fortificante-force-hair-500ml-240053.jpg?v=1742474211",
+      "url": "https://lojaprohall.com.br/products/mascara-de-crescimento-fortificante-force-hair-500ml",
+      "indicacao": "Cabelos enfraquecidos e danificados.",
+      "beneficios": [
+        "fortalece e restaura a fibra capilar",
+        "combate queda e quebra",
+        "estimula o crescimento saudável",
+        "ação antioxidante"
+      ],
+      "ativos": [],
+      "modo_de_uso": "Aplicar em cabelos limpos e úmidos, do comprimento às pontas, massagear suavemente, deixar agir de 5 a 10 minutos e enxaguar bem.",
+      "observacoes": "A página não cita ingredientes específicos. O produto é só a máscara (vendida individualmente). Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "kit-cachos-raizes-vibes-250ml",
+      "nome": "Kit Shampoo + Condicionador de Cachos | Raízes & Vibes 250ml",
+      "nome_curto": "Kit Shampoo + Condicionador de Cachos Raízes & Vibes",
+      "categoria": "Kit",
+      "linha": "Raízes & Vibes",
+      "uso": "nao_informado",
+      "kit": true,
+      "preco": 119.9,
+      "preco_promocional": 84.9,
+      "peso_g": 1000,
+      "peso_estimado": false,
+      "estoque": 10,
+      "conteudo": "Kit com shampoo e condicionador (o título indica 250 ml)",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/kit-shampoo-e-condicionador-cachos-e-curvas-250ml-raizes-vibes-prohall-prohall-cosmetic-5114388.png?v=1780390627",
+      "url": "https://lojaprohall.com.br/products/kit-shampoo-e-condicionador-raizes-vibes",
+      "indicacao": "Cabelos ondulados, cacheados e crespos, de todas as curvaturas.",
+      "beneficios": [
+        "limpeza suave do couro cabeludo",
+        "remove impurezas sem ressecar",
+        "maciez desde a primeira lavagem",
+        "proteção contra o ressecamento"
+      ],
+      "ativos": [
+        "óleos nutritivos",
+        "agentes hidratantes",
+        "proteína reconstrutora",
+        "Tecnologia Adaptativa HNR"
+      ],
+      "modo_de_uso": "Conforme a página: aplicar no cabelo limpo e úmido, distribuir por todo o comprimento, deixar agir por 15 minutos e enxaguar.",
+      "observacoes": "Vegano, sem parabenos e sem petrolatos. O modo de uso publicado na página cita 'máscara', embora o kit seja de shampoo e condicionador, e a página não lista o volume de cada item; na dúvida, seguir as instruções da embalagem. Uso externo."
+    },
+    {
+      "id": "gelatina-cachos-450g",
+      "nome": "Gelatina de Cachos: Fixa Sem Endurecer | Raízes & Vibes 450g",
+      "nome_curto": "Gelatina de Cachos Raízes & Vibes 450g",
+      "categoria": "Gelatina Capilar",
+      "linha": "Raízes & Vibes",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 89.9,
+      "preco_promocional": 59.9,
+      "peso_g": 576,
+      "peso_estimado": false,
+      "estoque": 3,
+      "conteudo": "450 g",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/gelatina-de-definicao-e-fixacao-duradoura-para-cachos-e-curvas-450g-raizes-vibes-prohall-prohall-cosmetic-5441150.png?v=1780390637",
+      "url": "https://lojaprohall.com.br/products/gelatina-de-definicao-intensa-adaptativa-raizes-vibes",
+      "indicacao": "Cabelos ondulados, cacheados e crespos; para definição duradoura e controle do frizz com movimento natural.",
+      "beneficios": [
+        "ajuda a formar e fixar as curvaturas",
+        "controla o frizz sem deixar duro",
+        "proteção contra radiação UV",
+        "preserva hidratação e brilho"
+      ],
+      "ativos": [
+        "óleo de tâmara",
+        "azeite de oliva",
+        "ácido hialurônico",
+        "polímeros fixadores Fix Vic e Luviset",
+        "Tecnologia Adaptativa HNR"
+      ],
+      "modo_de_uso": "Aplicar em cabelos limpos e úmidos, mecha a mecha, modelar as curvas e finalizar. Não enxaguar. Pode ser usada sozinha ou junto com creme de pentear.",
+      "observacoes": "Vegana, sem parabenos e sem petrolatos. Uso externo; suspender em caso de irritação."
     }
   ]
 }
