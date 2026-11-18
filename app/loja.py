@@ -1,10 +1,15 @@
+import re
 import secrets
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
+
+import segno
 
 from . import config
 from .catalogo import carregar_catalogo
-from .frete import CepInvalido, normalizar_cep, zona_do_cep
+from .dinheiro import formatar
+from .frete import NOMES_MODALIDADE, CepInvalido, formatar_cep, normalizar_cep, zona_do_cep
 from .regras import (
     ErroRegra,
     calcular_totais,
@@ -26,6 +31,49 @@ def validar_cep(cep):
     return cep
 
 
+AGUARDANDO = "aguardando_pagamento"
+PAGO = "pago"
+EXPIRADO = "expirado"
+
+EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+
+
+@dataclass
+class Pedido:
+    numero: str
+    status: str
+    criado_em: datetime
+    expira_em: datetime
+    itens: list
+    subtotal: Decimal
+    cupom: str | None
+    desconto_cupom: Decimal
+    base: Decimal
+    cep: str
+    zona: str
+    modalidade: str
+    frete: Decimal
+    frete_gratis: bool
+    prazo: str
+    desconto_pix: Decimal
+    total: Decimal
+    cliente: dict
+    copia_e_cola: str
+    origem: str = "conversa"
+
+    @property
+    def nome_modalidade(self):
+        return NOMES_MODALIDADE[self.modalidade]
+
+    def qr_code_data_uri(self):
+        return segno.make(self.copia_e_cola, error="m").svg_data_uri(scale=5, border=2)
+
+
+def texto_pix_falso(numero, total):
+    # de proposito fora do padrao do Banco Central (nao e BR Code/EMV)
+    return f"PIX-TESTE|PROHALL|{numero}|{total:.2f}|NAO-PAGAVEL"
+
+
 @dataclass
 class Sessao:
     id: str
@@ -34,6 +82,75 @@ class Sessao:
     cupom: str | None = None
     cep: str | None = None
     modalidade: str | None = None
+    cliente: dict = field(default_factory=dict)
+    pedidos: list = field(default_factory=list)
+    mensagens: list = field(default_factory=list)  # o que aparece no chat
+    _ultima_mensagem: int = 0
+
+    def registrar(self, autor, texto, produtos=None):
+        self._ultima_mensagem += 1
+        mensagem = {
+            "id": self._ultima_mensagem,
+            "autor": autor,  # cliente, sofia ou sistema
+            "texto": texto,
+            "produtos": list(produtos or []),
+            "quando": datetime.now().astimezone().isoformat(timespec="seconds"),
+        }
+        self.mensagens.append(mensagem)
+        return mensagem
+
+    def pedido(self, numero):
+        numero = str(numero or "").strip().upper()
+        return next((p for p in self.pedidos if p.numero == numero), None)
+
+    def ultimo_pedido(self):
+        return self.pedidos[-1] if self.pedidos else None
+
+
+def _texto(valor, limite):
+    return " ".join(str(valor or "").split())[:limite]
+
+
+def validar_cliente(dados):
+    dados = dados or {}
+    erros = {}
+
+    nome = _texto(dados.get("nome"), 100)
+    if len(nome) < 3 or not any(c.isalpha() for c in nome):
+        erros["nome"] = "Informe o nome completo."
+
+    email = str(dados.get("email") or "").strip()
+    if len(email) > 120 or not EMAIL.match(email):
+        erros["email"] = "Informe um e-mail válido (ex.: nome@exemplo.com)."
+
+    cep = ""
+    try:
+        cep = validar_cep(dados.get("cep"))
+    except ErroRegra as erro:
+        erros["cep"] = erro.mensagem
+
+    endereco = _texto(dados.get("endereco"), 150)
+    if len(endereco) < 3:
+        erros["endereco"] = "Informe o endereço (rua, avenida...)."
+
+    numero = str(dados.get("numero") or "").strip()
+    if not numero or len(numero) > 10:
+        erros["numero"] = "Informe o número do endereço (ou s/n)."
+
+    if erros:
+        raise ErroRegra(
+            "dados_invalidos",
+            "Para fechar o pedido ainda falta corrigir: " + " ".join(erros.values()),
+            campos=erros,
+        )
+    return {
+        "nome": nome,
+        "email": email,
+        "cep": cep,
+        "endereco": endereco,
+        "numero": numero,
+        "complemento": _texto(dados.get("complemento"), 80),
+    }
 
 
 class Loja:
@@ -44,6 +161,7 @@ class Loja:
         self.validade_pix_s = validade_pix_s or config.validade_pix()
         self._relogio = relogio or (lambda: datetime.now(timezone.utc))
         self.sessoes = {}
+        self._ultimo_pedido = 0
 
     def agora(self):
         return self._relogio()
@@ -134,3 +252,90 @@ class Loja:
         cep = validar_cep(cep) if cep else None
         codigo = validar_codigo_cupom(cupom) if cupom else None
         return calcular_totais(self.catalogo, simulados, codigo, cep)
+
+    def validade_em_texto(self):
+        minutos, segundos = divmod(self.validade_pix_s, 60)
+        return f"{minutos} minutos" if segundos == 0 else f"{self.validade_pix_s} segundos"
+
+    def criar_pedido(self, sessao, dados_cliente, origem="conversa"):
+        """Fecha o carrinho num pedido com PIX falso. Chat e formulario usam este mesmo metodo."""
+        if not sessao.itens:
+            raise ErroRegra("carrinho_vazio", "O carrinho está vazio: adicione produtos antes de fechar o pedido.")
+
+        cliente = validar_cliente(dados_cliente)
+        sessao.cliente = cliente
+
+        if cliente["cep"] != sessao.cep:
+            cep_cotado, sessao.cep = sessao.cep, cliente["cep"]
+            if cep_cotado is not None:
+                raise ErroRegra(
+                    "frete_recalculado",
+                    f"O CEP de entrega ({formatar_cep(cliente['cep'])}) é diferente do CEP usado na cotação "
+                    f"({formatar_cep(cep_cotado)}). O frete foi recalculado: confira o novo total e confirme "
+                    "para gerar o PIX.",
+                )
+        if sessao.modalidade is None:
+            raise ErroRegra(
+                "frete_nao_escolhido",
+                "Falta escolher a modalidade de frete (Econômica ou Expressa) antes de gerar o PIX.",
+            )
+
+        for produto_id, quantidade in sessao.itens.items():
+            validar_quantidade(self._produto(produto_id), quantidade, self.estoque[produto_id])
+
+        totais = self.totais(sessao)
+        if not totais.total_completo:
+            raise ErroRegra("frete_nao_escolhido", "Não foi possível calcular o frete para fechar o pedido.")
+
+        self._ultimo_pedido += 1
+        numero = f"PH-TESTE-{self._ultimo_pedido:06d}"
+        agora = self.agora()
+        pedido = Pedido(
+            numero=numero,
+            status=AGUARDANDO,
+            criado_em=agora,
+            expira_em=agora + timedelta(seconds=self.validade_pix_s),
+            itens=[
+                {
+                    "produto_id": linha.produto.id,
+                    "nome": linha.produto.nome_curto,
+                    "quantidade": linha.quantidade,
+                    "preco_unitario": linha.preco_unitario,
+                    "total": linha.total,
+                }
+                for linha in totais.linhas
+            ],
+            subtotal=totais.subtotal,
+            cupom=totais.cupom if totais.cupom_aplicado else None,
+            desconto_cupom=totais.desconto_cupom,
+            base=totais.base,
+            cep=totais.cotacao.cep,
+            zona=totais.cotacao.zona,
+            modalidade=totais.modalidade,
+            frete=totais.frete,
+            frete_gratis=totais.frete_gratis,
+            prazo=totais.cotacao.opcoes[totais.modalidade].prazo,
+            desconto_pix=totais.desconto_pix,
+            total=totais.total_pix,
+            cliente=dict(cliente),
+            copia_e_cola=texto_pix_falso(numero, totais.total_pix),
+            origem=origem,
+        )
+        self._reservar_estoque(pedido)
+        sessao.pedidos.append(pedido)
+        sessao.itens = {}
+        sessao.cupom = None
+
+        if origem == "formulario":
+            primeiro_nome = cliente["nome"].split()[0]
+            sessao.registrar(
+                "sofia",
+                f"Prontinho, {primeiro_nome}! Gerei o PIX de teste do pedido {pedido.numero}, no valor de "
+                f"{formatar(pedido.total)}. Ele vale por {self.validade_em_texto()} ⏰ "
+                "É só usar o botão “Simular pagamento” (ambiente de teste: nenhum pagamento é real).",
+            )
+        return pedido
+
+    def _reservar_estoque(self, pedido):
+        for item in pedido.itens:
+            self.estoque[item["produto_id"]] -= item["quantidade"]
