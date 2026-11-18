@@ -19,6 +19,8 @@ const app = {
   pendentes: 0, // mensagens da cliente ja desenhadas antes da resposta do servidor
   rascunho: { cupom: "", cep: "" }, // o que ela digitou e ainda nao aplicou
   erros: { cupom: "", cep: "" },
+  fimDoPix: null, // horario local em que o PIX atual expira
+  conferindoExpiracao: false,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -606,4 +608,152 @@ async function enviarCheckout(evento) {
     $("checkout-erro").hidden = false;
   });
   botao.disabled = false;
+}
+
+// --- PIX falso ---
+
+function sincronizarPix() {
+  const pedido = app.estado && app.estado.pedido;
+  const aguardando = pedido && pedido.status === "aguardando_pagamento";
+  app.fimDoPix = aguardando ? Date.now() + pedido.segundos_restantes * 1000 : null;
+}
+
+function tempoRestante() {
+  if (!app.fimDoPix) return 0;
+  return Math.max(0, Math.ceil((app.fimDoPix - Date.now()) / 1000));
+}
+
+function atualizarContadores() {
+  const restante = tempoRestante();
+  const minutos = String(Math.floor(restante / 60)).padStart(2, "0");
+  const segundos = String(restante % 60).padStart(2, "0");
+  document.querySelectorAll("[data-contador]").forEach((no) => (no.textContent = `${minutos}:${segundos}`));
+}
+
+// roda a cada meio segundo: atualiza o contador e, quando zera, pergunta ao servidor
+async function tique() {
+  if (!app.fimDoPix) return;
+  atualizarContadores();
+  if (tempoRestante() === 0 && !app.conferindoExpiracao) {
+    // quem decide a expiracao e o servidor; aqui so pedimos o estado novo
+    app.conferindoExpiracao = true;
+    try {
+      await chamar("/api/estado", {}, "GET");
+    } catch (erro) {
+      // tenta de novo no proximo tique
+    }
+    setTimeout(() => (app.conferindoExpiracao = false), 1000);
+  }
+}
+
+function abrirPix() {
+  if (!app.estado || !app.estado.pedido) return;
+  desenharPix();
+  abrirModal("modal-pix");
+}
+
+async function copiarTexto(texto, botao) {
+  let copiou = false;
+  try {
+    await navigator.clipboard.writeText(texto);
+    copiou = true;
+  } catch (erro) {
+    // navegador sem permissao: usa um campo escondido
+    const area = el("textarea");
+    area.value = texto;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try {
+      copiou = document.execCommand("copy");
+    } catch (falha) {
+      copiou = false;
+    }
+    area.remove();
+  }
+  botao.textContent = copiou ? "✓ Copiado" : "Selecione e copie o texto acima";
+  setTimeout(() => (botao.textContent = "Copiar código"), 2000);
+}
+
+// botao que chama uma rota com o numero do pedido e fica desabilitado enquanto espera
+function botaoDoPedido(texto, rota, pedido) {
+  const botao = el("button", "btn-primario btn-largo", texto);
+  botao.type = "button";
+  botao.addEventListener("click", async () => {
+    botao.disabled = true;
+    await executar(rota, { numero: pedido.numero });
+    botao.disabled = false;
+  });
+  return botao;
+}
+
+function pixAguardando(pedido) {
+  const qr = el("img", "pix-qr");
+  qr.alt = "QR Code de teste (não pagável)";
+  qr.src = pedido.qr_code;
+
+  const copia = el("div", "pix-copia");
+  copia.appendChild(el("span", "", "PIX copia e cola (fictício)"));
+  copia.appendChild(el("code", "", pedido.copia_e_cola));
+  const copiar = el("button", "btn-leve", "Copiar código");
+  copiar.type = "button";
+  copiar.addEventListener("click", () => copiarTexto(pedido.copia_e_cola, copiar));
+  copia.appendChild(copiar);
+
+  const contador = el("div", "pix-contador", "Este PIX de teste expira em ");
+  const tempo = el("strong", "", "--:--");
+  tempo.dataset.contador = "1";
+  contador.appendChild(tempo);
+
+  return [
+    qr,
+    el("div", "pix-falso", "QR Code e código de mentira: não funcionam em nenhum banco. Nenhum pagamento é real."),
+    copia,
+    contador,
+    botaoDoPedido("Simular pagamento", "/api/pedido/pagar", pedido),
+  ];
+}
+
+function pixExpirado(pedido) {
+  const filhos = [el("div", "pix-status expirado", "⏰ PIX expirado")];
+  if (!pedido.substituido_por) filhos.push(botaoDoPedido("Gerar novo PIX", "/api/pedido/novo-pix", pedido));
+  return filhos;
+}
+
+function resumoDoPedido(pedido) {
+  const resumo = el("div", "pix-resumo");
+  pedido.itens.forEach((item) => resumo.appendChild(el("div", "", `${item.quantidade}× ${item.nome} — ${item.total}`)));
+  if (pedido.cupom) resumo.appendChild(el("div", "", `Cupom ${pedido.cupom}: −${pedido.desconto_cupom}`));
+  const frete = pedido.frete_gratis ? "Grátis" : pedido.frete;
+  resumo.appendChild(el("div", "", `Frete ${pedido.modalidade}: ${frete} · ${pedido.prazo}`));
+  resumo.appendChild(el("div", "", `Desconto PIX: −${pedido.desconto_pix}`));
+  resumo.appendChild(el("div", "", `Entrega: ${pedido.cliente.endereco}, ${pedido.cliente.numero} · CEP ${pedido.cep}`));
+  return resumo;
+}
+
+function desenharPix() {
+  const pedido = app.estado.pedido;
+  if (!pedido) {
+    fecharModal("modal-pix");
+    return;
+  }
+  const numero = el("div", "pix-numero", "Pedido ");
+  numero.appendChild(el("strong", "", pedido.numero));
+  numero.appendChild(document.createTextNode(" "));
+  numero.appendChild(el("span", `selo selo-${pedido.status}`, pedido.status_rotulo));
+
+  let corpo;
+  if (pedido.status === "aguardando_pagamento") {
+    corpo = pixAguardando(pedido);
+  } else if (pedido.status === "pago") {
+    corpo = [
+      el("div", "pix-status pago", "✅ Pagamento confirmado (simulação)"),
+      el("div", "pix-falso", "Ambiente de teste: nenhum valor foi cobrado."),
+    ];
+  } else {
+    corpo = pixExpirado(pedido);
+  }
+  $("pix-conteudo").replaceChildren(numero, el("div", "pix-valor", pedido.total), ...corpo, resumoDoPedido(pedido));
+  atualizarContadores();
 }
