@@ -113,6 +113,14 @@ Os 15 produtos foram copiados de [lojaprohall.com.br](https://lojaprohall.com.br
 
 Produtos: Tônico Force Hair, Select One, Fluido PRO.R, Leave-in Secar sem Frizz, Óleo Absolut Oil, Kit Equalize, Shampoo Force Hair, Máscara Force Hair, Kit Cachos Raízes & Vibes, Gelatina de Cachos, Shampoo Absolut One, Kit Extreme Repair Home Care, Btx Blend Repair, Kit Encorpax e Finalizador Absolut One.
 
+## Conversas de exemplo
+
+A pasta `conversas/` traz 3 conversas exportadas com perfis diferentes:
+
+- `01-indecisa.txt`: cliente que não sabe o que comprar, até o PIX pago.
+- `02-objetiva.txt`: cliente que já sabe o que quer, com cupom e frete grátis.
+- `03-teste-limites.txt`: cliente que tenta quebrar a Sofia (cupom falso, desconto inventado, preço errado, CEP inválido, pedido fora do escopo).
+
 ## O que ficou de fora
 
 - Banco de dados (tudo fica em memória).
