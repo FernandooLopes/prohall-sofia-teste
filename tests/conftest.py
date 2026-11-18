@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
 from app.catalogo import Catalogo, produto_de_dict
+from app.loja import Loja
 
 
 def _produto(id, preco, promocional=None, peso_g=300, estoque=50):
@@ -33,3 +36,29 @@ def catalogo():
             _produto("trezentos-dez", "310.00", peso_g=400),
         ]
     )
+
+
+class Relogio:
+    def __init__(self):
+        self.agora = datetime(2026, 11, 16, 12, 0, 0, tzinfo=timezone.utc)
+
+    def __call__(self):
+        return self.agora
+
+    def avancar(self, **kwargs):
+        self.agora += timedelta(**kwargs)
+
+
+@pytest.fixture
+def relogio():
+    return Relogio()
+
+
+@pytest.fixture
+def loja(catalogo, relogio):
+    return Loja(catalogo=catalogo, validade_pix_s=900, relogio=relogio)
+
+
+@pytest.fixture
+def sessao(loja):
+    return loja.nova_sessao()
