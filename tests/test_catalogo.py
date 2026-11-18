@@ -43,3 +43,13 @@ def test_carrega_do_json(tmp_path):
     assert catalogo.precos_copiados_em == "2026-11-16"
     assert catalogo.obter(" b ").nome == "B"
     assert catalogo.obter("nao-existe") is None
+
+
+def test_catalogo_real_cumpre_o_enunciado():
+    produtos = carregar_catalogo().listar()
+    assert len(produtos) == 15
+    assert len({p.categoria for p in produtos}) >= 4
+    assert any(p.kit for p in produtos)
+    assert any(p.uso == "profissional" for p in produtos)
+    assert any(p.uso == "home_care" for p in produtos)
+    assert all(p.estoque > 0 and p.peso_g > 0 for p in produtos)
