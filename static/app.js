@@ -17,6 +17,8 @@ const app = {
   estado: null, // ultimo estado recebido do servidor
   aguardando: false, // esperando a resposta da Sofia
   pendentes: 0, // mensagens da cliente ja desenhadas antes da resposta do servidor
+  rascunho: { cupom: "", cep: "" }, // o que ela digitou e ainda nao aplicou
+  erros: { cupom: "", cep: "" },
 };
 
 const $ = (id) => document.getElementById(id);
@@ -292,4 +294,211 @@ async function adicionarAoCarrinho(produto, botao) {
     botao.textContent = "✓ Adicionado";
     setTimeout(() => (botao.textContent = original), 1600);
   }
+}
+
+// --- Carrinho ---
+
+function linhaItem(item) {
+  const linha = el("div", "item");
+  linha.appendChild(criarImagem(item.imagem, ""));
+  const meio = el("div");
+  meio.appendChild(el("div", "item-nome", item.nome));
+  meio.appendChild(el("div", "item-preco", `${item.preco_unitario} cada`));
+  linha.appendChild(meio);
+
+  const mudar = (quantidade) => executar("/api/carrinho/quantidade", { produto_id: item.produto_id, quantidade });
+  const direita = el("div", "item-direita");
+  direita.appendChild(el("div", "item-total", item.total));
+  const quantidade = el("div", "quantidade");
+  const menos = el("button", "", "−");
+  menos.type = "button";
+  menos.setAttribute("aria-label", `Diminuir ${item.nome}`);
+  menos.addEventListener("click", () => mudar(item.quantidade - 1));
+  const mais = el("button", "", "+");
+  mais.type = "button";
+  mais.setAttribute("aria-label", `Aumentar ${item.nome}`);
+  mais.disabled = item.quantidade >= item.maximo;
+  mais.title = mais.disabled ? `Máximo de ${item.maximo} unidade(s)` : "";
+  mais.addEventListener("click", () => mudar(item.quantidade + 1));
+  quantidade.append(menos, el("span", "", String(item.quantidade)), mais);
+  direita.appendChild(quantidade);
+  const remover = el("button", "btn-link", "remover");
+  remover.type = "button";
+  remover.addEventListener("click", () => executar("/api/carrinho/remover", { produto_id: item.produto_id }));
+  direita.appendChild(remover);
+  linha.appendChild(direita);
+  return linha;
+}
+
+// campo de texto com botao ao lado (usado no cupom e no CEP)
+function formularioCurto(placeholder, rotulo, botaoTexto, rascunho) {
+  const formulario = el("form", "linha-form");
+  const campo = el("input");
+  campo.type = "text";
+  campo.placeholder = placeholder;
+  campo.setAttribute("aria-label", rotulo);
+  campo.value = app.rascunho[rascunho] || "";
+  campo.addEventListener("input", () => (app.rascunho[rascunho] = campo.value));
+  const botao = el("button", "btn-leve", botaoTexto);
+  botao.type = "submit";
+  formulario.append(campo, botao);
+  return { formulario, campo };
+}
+
+function blocoCupom(carrinho) {
+  const bloco = el("div");
+  bloco.appendChild(el("h3", "", "Cupom"));
+  const cupom = carrinho.cupom;
+  if (cupom) {
+    const etiqueta = el("div", cupom.aplicado ? "etiqueta" : "etiqueta suspenso");
+    const texto = cupom.aplicado
+      ? `${cupom.codigo} aplicado (−${cupom.desconto})`
+      : `${cupom.codigo} sem valer: faltam ${cupom.falta} no subtotal`;
+    etiqueta.appendChild(el("span", "", texto));
+    const remover = el("button", "btn-link", "remover");
+    remover.type = "button";
+    remover.addEventListener("click", () => executar("/api/cupom/remover", {}));
+    etiqueta.appendChild(remover);
+    bloco.appendChild(etiqueta);
+    return bloco;
+  }
+  const { formulario, campo } = formularioCurto("Código do cupom", "Código do cupom", "Aplicar", "cupom");
+  campo.maxLength = 30;
+  formulario.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    if (!campo.value.trim()) return;
+    app.erros.cupom = "";
+    const dados = await executar("/api/cupom", { codigo: campo.value }, (erro) => {
+      app.erros.cupom = erro.message;
+      desenharCarrinho();
+    });
+    if (dados) app.rascunho.cupom = "";
+  });
+  bloco.appendChild(formulario);
+  if (app.erros.cupom) bloco.appendChild(el("p", "erro-inline", app.erros.cupom));
+  return bloco;
+}
+
+function opcoesDeFrete(frete, nomeDoGrupo) {
+  const grupo = el("div", "opcoes-frete");
+  frete.opcoes.forEach((opcao) => {
+    const rotulo = el("label", "opcao-frete");
+    const radio = el("input");
+    radio.type = "radio";
+    radio.name = nomeDoGrupo;
+    radio.value = opcao.modalidade;
+    radio.checked = frete.modalidade === opcao.modalidade;
+    radio.addEventListener("change", () => executar("/api/frete/modalidade", { modalidade: opcao.modalidade }));
+    const texto = el("span");
+    texto.appendChild(document.createTextNode(opcao.nome));
+    texto.appendChild(el("small", "", opcao.prazo));
+    const valor = el("span", opcao.gratis ? "valor gratis" : "valor", opcao.gratis ? "Grátis" : opcao.valor);
+    rotulo.append(radio, texto, valor);
+    grupo.appendChild(rotulo);
+  });
+  return grupo;
+}
+
+function blocoFrete(carrinho) {
+  const bloco = el("div");
+  bloco.appendChild(el("h3", "", "Frete"));
+  app.rascunho.cep = app.rascunho.cep || carrinho.cep || "";
+  const { formulario, campo } = formularioCurto("CEP (00000-000)", "CEP de entrega", "Calcular", "cep");
+  campo.inputMode = "numeric";
+  campo.maxLength = 9;
+  formulario.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    app.erros.cep = "";
+    const dados = await executar("/api/frete", { cep: campo.value }, (erro) => {
+      app.erros.cep = erro.message;
+      desenharCarrinho();
+    });
+    if (dados) app.rascunho.cep = "";
+  });
+  bloco.appendChild(formulario);
+  if (app.erros.cep) bloco.appendChild(el("p", "erro-inline", app.erros.cep));
+
+  const frete = carrinho.frete;
+  if (frete) {
+    bloco.appendChild(el("p", "dica", `Entrega para ${carrinho.cep} · zona ${frete.zona} (${frete.regiao})`));
+    bloco.appendChild(opcoesDeFrete(frete, "frete-carrinho"));
+    if (frete.falta_para_gratis) {
+      bloco.appendChild(el("p", "dica", `Faltam ${frete.falta_para_gratis} em produtos para o frete grátis na Econômica.`));
+    } else {
+      bloco.appendChild(el("p", "dica destaque", "Você ganhou frete grátis na Econômica 🎉"));
+    }
+  }
+  return bloco;
+}
+
+function linhaTotal(rotulo, valor, classe) {
+  const linha = el("div", classe || "");
+  linha.append(el("span", "", rotulo), el("span", "", valor));
+  return linha;
+}
+
+function blocoTotais(carrinho) {
+  const totais = el("div", "totais");
+  totais.appendChild(linhaTotal("Subtotal", carrinho.subtotal));
+  if (carrinho.cupom && carrinho.cupom.aplicado) {
+    totais.appendChild(linhaTotal(`Cupom ${carrinho.cupom.codigo}`, `−${carrinho.cupom.desconto}`, "desconto"));
+  }
+
+  const frete = carrinho.frete;
+  const escolhida = frete && frete.opcoes.find((o) => o.modalidade === frete.modalidade);
+  let valorFrete = "informe o CEP";
+  if (frete) valorFrete = !escolhida ? "escolha a modalidade" : frete.gratis ? "Grátis" : frete.valor;
+  totais.appendChild(linhaTotal(escolhida ? `Frete (${escolhida.nome})` : "Frete", valorFrete));
+
+  totais.appendChild(linhaTotal("Desconto PIX (5%)", `−${carrinho.desconto_pix}`, "desconto"));
+  const rotuloTotal = carrinho.total_completo ? "Total no PIX" : "Total no PIX (sem frete)";
+  totais.appendChild(linhaTotal(rotuloTotal, carrinho.total_pix, "total"));
+  return totais;
+}
+
+function pedidoMini(pedido) {
+  const aguardando = pedido.status === "aguardando_pagamento";
+  const bloco = el("div", "pedido-mini");
+  const titulo = el("div");
+  titulo.appendChild(el("strong", "", `Pedido ${pedido.numero} `));
+  titulo.appendChild(el("span", `selo selo-${pedido.status}`, pedido.status_rotulo));
+  bloco.appendChild(titulo);
+  const detalhe = el("div", "", `Total ${pedido.total}`);
+  if (aguardando) {
+    detalhe.appendChild(document.createTextNode(" · expira em "));
+    const contador = el("strong", "", "--:--");
+    contador.dataset.contador = "1";
+    detalhe.appendChild(contador);
+  }
+  bloco.appendChild(detalhe);
+  const ver = el("button", "btn-leve", aguardando ? "Ver PIX de teste" : "Ver pedido");
+  ver.type = "button";
+  ver.addEventListener("click", abrirPix);
+  bloco.appendChild(ver);
+  return bloco;
+}
+
+function desenharCarrinho() {
+  if (!app.estado) return;
+  const carrinho = app.estado.carrinho;
+  const quantidade = carrinho.quantidade_itens;
+  $("barra-itens").textContent = carrinho.vazio
+    ? "Carrinho vazio"
+    : `Carrinho · ${quantidade} ${quantidade === 1 ? "item" : "itens"}`;
+  $("barra-total").textContent = carrinho.vazio ? "" : carrinho.total_pix;
+
+  const filhos = [];
+  if (carrinho.vazio) {
+    filhos.push(el("p", "carrinho-vazio", "Seu carrinho está vazio. Peça uma indicação para a Sofia 💜"));
+  } else {
+    carrinho.itens.forEach((item) => filhos.push(linhaItem(item)));
+    filhos.push(blocoCupom(carrinho), blocoFrete(carrinho), blocoTotais(carrinho));
+    const finalizar = el("button", "btn-primario btn-largo", "Finalizar compra");
+    finalizar.type = "button";
+    finalizar.addEventListener("click", abrirCheckout);
+    filhos.push(finalizar, el("p", "nota", "Pagamento somente por PIX (ambiente de teste)."));
+  }
+  if (app.estado.pedido) filhos.push(pedidoMini(app.estado.pedido));
+  $("carrinho-corpo").replaceChildren(...filhos);
+  atualizarContadores();
 }
