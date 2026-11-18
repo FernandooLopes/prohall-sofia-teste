@@ -502,3 +502,108 @@ function desenharCarrinho() {
   $("carrinho-corpo").replaceChildren(...filhos);
   atualizarContadores();
 }
+
+// --- Checkout ---
+
+function abrirModal(id) {
+  $(id).hidden = false;
+  $("carrinho").classList.remove("aberto");
+  $("carrinho-barra").setAttribute("aria-expanded", "false");
+}
+
+function fecharModal(id) {
+  $(id).hidden = true;
+}
+
+function limparErrosDoCheckout() {
+  const formulario = $("form-checkout");
+  formulario.querySelectorAll(".erro-campo").forEach((no) => (no.textContent = ""));
+  formulario.querySelectorAll(".campo-invalido").forEach((no) => no.classList.remove("campo-invalido"));
+  $("checkout-erro").hidden = true;
+}
+
+function abrirCheckout() {
+  if (!app.estado || app.estado.carrinho.vazio) {
+    avisar("Seu carrinho está vazio. Adicione um produto antes de finalizar.");
+    return;
+  }
+  const formulario = $("form-checkout");
+  const cliente = app.estado.cliente || {};
+  ["nome", "email", "endereco", "numero", "complemento"].forEach((campo) => {
+    if (!formulario.elements[campo].value) formulario.elements[campo].value = cliente[campo] || "";
+  });
+  formulario.elements.cep.value = app.estado.carrinho.cep || formulario.elements.cep.value || "";
+  limparErrosDoCheckout();
+  desenharCheckout();
+  abrirModal("modal-checkout");
+}
+
+function desenharCheckout() {
+  const carrinho = app.estado.carrinho;
+  if (carrinho.vazio) {
+    fecharModal("modal-checkout");
+    return;
+  }
+  const resumo = carrinho.itens.map((item) => {
+    const linha = el("div", "item");
+    const nome = el("div");
+    nome.appendChild(el("div", "item-nome", `${item.quantidade}× ${item.nome}`));
+    nome.appendChild(el("div", "item-preco", `${item.preco_unitario} cada`));
+    linha.append(nome, el("div", "item-total", item.total));
+    return linha;
+  });
+  resumo.push(blocoTotais(carrinho));
+  $("checkout-resumo").replaceChildren(...resumo);
+
+  $("checkout-frete").replaceChildren(
+    carrinho.frete
+      ? opcoesDeFrete(carrinho.frete, "frete-checkout")
+      : el("p", "dica", "Informe um CEP válido para ver as opções de frete.")
+  );
+}
+
+// quando o CEP do formulario fica completo, recalcula o frete na hora
+async function cepDoCheckoutMudou() {
+  const campo = $("form-checkout").elements.cep;
+  const erro = $("form-checkout").querySelector('[data-erro="cep"]');
+  const digitos = campo.value.replace(/\D/g, "");
+  if (digitos.length !== 8) return;
+  if (app.estado.carrinho.cep && app.estado.carrinho.cep.replace(/\D/g, "") === digitos) return;
+  erro.textContent = "";
+  campo.classList.remove("campo-invalido");
+  await executar("/api/frete", { cep: campo.value }, (falha) => {
+    erro.textContent = falha.message;
+    campo.classList.add("campo-invalido");
+  });
+}
+
+function mostrarErrosDoFormulario(formulario, campos) {
+  Object.entries(campos).forEach(([campo, mensagem]) => {
+    const aviso = formulario.querySelector(`[data-erro="${campo}"]`);
+    if (aviso) aviso.textContent = mensagem;
+    if (formulario.elements[campo]) formulario.elements[campo].classList.add("campo-invalido");
+  });
+  const primeiro = formulario.querySelector(".campo-invalido");
+  if (primeiro) primeiro.focus();
+}
+
+async function enviarCheckout(evento) {
+  evento.preventDefault();
+  const formulario = $("form-checkout");
+  limparErrosDoCheckout();
+  const dados = {};
+  ["nome", "email", "cep", "endereco", "numero", "complemento"].forEach((campo) => {
+    dados[campo] = formulario.elements[campo].value;
+  });
+  const botao = $("btn-gerar-pix");
+  botao.disabled = true;
+  await executar("/api/pedido", dados, (erro) => {
+    if (erro.codigo === "dados_invalidos" && erro.dados.campos) {
+      mostrarErrosDoFormulario(formulario, erro.dados.campos);
+      return;
+    }
+    $("checkout-erro").textContent = erro.message;
+    $("checkout-erro").hidden = false;
+  });
+  botao.disabled = false;
+}
