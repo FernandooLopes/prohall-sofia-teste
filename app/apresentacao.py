@@ -1,6 +1,7 @@
 from .dinheiro import formatar
 from .frete import formatar_cep
-from .regras import quantidade_maxima
+from .loja import AGUARDANDO
+from .regras import MINIMO_CUPOM, quantidade_maxima
 
 ROTULOS_STATUS = {
     "aguardando_pagamento": "aguardando pagamento",
@@ -145,3 +146,109 @@ def estado_para_ui(loja, sessao):
         "pedido": pedido_para_ui(pedido, loja.agora()) if pedido else None,
         "validade_pix_s": loja.validade_pix_s,
     }
+
+
+# o que vai pro modelo e sempre texto pronto (R$ 0,00): a Sofia so repete, nunca calcula
+
+def _valor_frete(valor, gratis):
+    return "GRÁTIS (R$ 0,00)" if gratis else formatar(valor)
+
+
+def produto_para_modelo(loja, produto):
+    estoque = loja.estoque[produto.id]
+    dados = {
+        "produto_id": produto.id,
+        "nome": produto.nome_curto,
+        "preco": formatar(produto.preco_vigente),
+        "estoque": estoque,
+        "maximo_por_pedido": quantidade_maxima(estoque),
+    }
+    if produto.em_promocao:
+        dados["preco_cheio"] = formatar(produto.preco)
+    return dados
+
+
+def totais_para_modelo(totais, cep=None):
+    """Resumo do carrinho (ou de uma simulacao) com os valores prontos."""
+    dados = {
+        "itens": [
+            {
+                "produto_id": linha.produto.id,
+                "nome": linha.produto.nome_curto,
+                "quantidade": linha.quantidade,
+                "preco_unitario": formatar(linha.preco_unitario),
+                "total_do_item": formatar(linha.total),
+            }
+            for linha in totais.linhas
+        ],
+        "subtotal": formatar(totais.subtotal),
+    }
+    if totais.cupom_aplicado:
+        dados["cupom"] = f"{totais.cupom} aplicado: -{formatar(totais.desconto_cupom)}"
+    elif totais.cupom:
+        dados["cupom"] = (
+            f"{totais.cupom} registrado, mas SEM VALER: o subtotal está abaixo de {formatar(MINIMO_CUPOM)} "
+            f"(faltam {formatar(totais.falta_para_cupom)})"
+        )
+    else:
+        dados["cupom"] = "nenhum"
+    dados["base_dos_produtos_apos_cupom"] = formatar(totais.base)
+    dados["desconto_pix_5_por_cento"] = f"-{formatar(totais.desconto_pix)}"
+    dados["produtos_com_desconto_pix"] = formatar(totais.produtos_no_pix)
+
+    cotacao = totais.cotacao
+    if cotacao is None:
+        dados["frete"] = "não calculado" if cep else "não calculado (falta o CEP)"
+        dados["total_no_pix_sem_frete"] = formatar(totais.total_pix)
+        return dados
+
+    dados["cep"] = formatar_cep(cotacao.cep)
+    dados["zona"] = f"{cotacao.zona} ({cotacao.regiao})"
+    dados["opcoes_de_frete"] = [
+        {
+            "modalidade": opcao.nome,
+            "valor": _valor_frete(opcao.valor, opcao.gratis),
+            "prazo": opcao.prazo,
+            "total_no_pix_com_esta_modalidade": formatar(totais.produtos_no_pix + opcao.valor),
+        }
+        for opcao in cotacao.opcoes.values()
+    ]
+    if cotacao.falta_para_frete_gratis > 0:
+        dados["frete_gratis_na_economica"] = (
+            f"faltam {formatar(cotacao.falta_para_frete_gratis)} em produtos para atingir "
+            f"{formatar(cotacao.minimo_frete_gratis)}"
+        )
+    else:
+        dados["frete_gratis_na_economica"] = "atingido"
+    if totais.total_completo:
+        escolhida = cotacao.opcoes[totais.modalidade]
+        dados["frete_escolhido"] = {
+            "modalidade": escolhida.nome,
+            "valor": _valor_frete(escolhida.valor, escolhida.gratis),
+            "prazo": escolhida.prazo,
+        }
+        dados["total_no_pix"] = formatar(totais.total_pix)
+    else:
+        dados["frete_escolhido"] = "nenhum (a cliente ainda precisa escolher Econômica ou Expressa)"
+        dados["total_no_pix_sem_frete"] = formatar(totais.total_pix)
+    return dados
+
+
+def pedido_para_modelo(pedido, agora):
+    dados = {
+        "numero": pedido.numero,
+        "status": ROTULOS_STATUS[pedido.status],
+        "itens": [f"{item['quantidade']}x {item['nome']} ({formatar(item['total'])})" for item in pedido.itens],
+        "subtotal": formatar(pedido.subtotal),
+        "cupom": f"{pedido.cupom}: -{formatar(pedido.desconto_cupom)}" if pedido.cupom else "nenhum",
+        "frete": f"{pedido.nome_modalidade}: {_valor_frete(pedido.frete, pedido.frete_gratis)}, prazo de {pedido.prazo}",
+        "desconto_pix": f"-{formatar(pedido.desconto_pix)}",
+        "total": formatar(pedido.total),
+        "entrega": f"{pedido.cliente['endereco']}, {pedido.cliente['numero']} — CEP {formatar_cep(pedido.cep)}",
+    }
+    if pedido.status == AGUARDANDO:
+        restante = pedido.segundos_restantes(agora)
+        dados["pix_expira_em"] = f"{restante // 60} min {restante % 60:02d} s"
+    if pedido.substituido_por:
+        dados["substituido_por"] = pedido.substituido_por
+    return dados
