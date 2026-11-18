@@ -1,6 +1,9 @@
-from decimal import InvalidOperation
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 
-from .dinheiro import D, formatar
+from .catalogo import Produto
+from .dinheiro import ZERO, D, arredondar, formatar
+from .frete import CepInvalido, CotacaoFrete, calcular_frete
 
 CUPOM = "PROHALL10"
 PERCENTUAL_CUPOM = D("0.10")
@@ -93,3 +96,97 @@ def validar_cupom(codigo, subtotal):
             falta=formatar(falta),
         )
     return codigo
+
+
+@dataclass(frozen=True)
+class LinhaCarrinho:
+    produto: Produto
+    quantidade: int
+    preco_unitario: Decimal
+    total: Decimal
+
+
+@dataclass(frozen=True)
+class Totais:
+    linhas: tuple
+    quantidade_itens: int
+    peso_itens_g: int
+    subtotal: Decimal
+    cupom: str | None  # so guarda o codigo se for o PROHALL10
+    cupom_aplicado: bool
+    desconto_cupom: Decimal
+    falta_para_cupom: Decimal
+    base: Decimal
+    cotacao: CotacaoFrete | None
+    modalidade: str | None
+    frete: Decimal | None  # None enquanto faltar CEP ou modalidade
+    frete_gratis: bool
+    desconto_pix: Decimal
+    produtos_no_pix: Decimal
+    total_pix: Decimal
+    total_completo: bool  # True quando o frete ja entrou no total
+
+    @property
+    def vazio(self):
+        return not self.linhas
+
+
+def calcular_totais(catalogo, itens, cupom=None, cep=None, modalidade=None):
+    """itens: {produto_id: quantidade}. Cada etapa arredonda pra 2 casas."""
+    linhas = []
+    for produto_id, quantidade in itens.items():
+        produto = catalogo.obter(produto_id)
+        if produto is None or quantidade <= 0:
+            continue
+        preco = produto.preco_vigente
+        linhas.append(LinhaCarrinho(produto, quantidade, preco, arredondar(preco * quantidade)))
+
+    subtotal = arredondar(sum((l.total for l in linhas), ZERO))
+    peso_itens = sum(l.produto.peso_g * l.quantidade for l in linhas)
+
+    # o cupom deixa de valer se o subtotal cair abaixo do minimo
+    cupom = normalizar_cupom(cupom)
+    if cupom != CUPOM:
+        cupom = None
+    cupom_aplicado = cupom is not None and subtotal >= MINIMO_CUPOM
+    desconto_cupom = arredondar(subtotal * PERCENTUAL_CUPOM) if cupom_aplicado else ZERO
+    falta_para_cupom = MINIMO_CUPOM - subtotal if cupom and not cupom_aplicado else ZERO
+
+    base = arredondar(subtotal - desconto_cupom)
+
+    # o frete e cotado sobre a base; so entra no total com CEP e modalidade
+    cotacao = None
+    if cep and linhas:
+        try:
+            cotacao = calcular_frete(cep, peso_itens, base)
+        except CepInvalido:
+            pass
+    modalidade = normalizar_modalidade(modalidade)
+    opcao = cotacao.opcoes.get(modalidade) if cotacao else None
+    frete = opcao.valor if opcao else None
+
+    # o total segue a formula base x 0,95 + frete, e o desconto mostrado e a
+    # diferenca. Assim o resumo fecha no centavo (base 79,90 -> 75,91 e desconto 3,99)
+    produtos_no_pix = arredondar(base * FATOR_PIX)
+    desconto_pix = base - produtos_no_pix
+    total_pix = produtos_no_pix + (frete or ZERO)
+
+    return Totais(
+        linhas=tuple(linhas),
+        quantidade_itens=sum(l.quantidade for l in linhas),
+        peso_itens_g=peso_itens,
+        subtotal=subtotal,
+        cupom=cupom,
+        cupom_aplicado=cupom_aplicado,
+        desconto_cupom=desconto_cupom,
+        falta_para_cupom=falta_para_cupom,
+        base=base,
+        cotacao=cotacao,
+        modalidade=modalidade if opcao else None,
+        frete=frete,
+        frete_gratis=opcao.gratis if opcao else False,
+        desconto_pix=desconto_pix,
+        produtos_no_pix=produtos_no_pix,
+        total_pix=total_pix,
+        total_completo=opcao is not None,
+    )
