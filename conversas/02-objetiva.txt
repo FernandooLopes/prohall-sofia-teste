@@ -1,0 +1,120 @@
+Conversa com a Sofia — vendedora virtual da Prohall (AMBIENTE DE TESTE)
+Perfil: Carla, cliente objetiva (cabeleireira que já sabe o que quer)
+Modelo: gemini-3.8-flash
+Início: 18/11/2026 15:45
+========================================================================
+
+[15:45:37] Sofia:
+Oi! Eu sou a Sofia, consultora de beleza da Prohall 💜
+Me conta: como está o seu cabelo hoje e o que você gostaria de melhorar nele?
+
+[15:46:07] Cliente:
+quero 3 Máscara Force Hair e 2 Shampoo Force Hair
+
+[15:46:12] Sofia:
+Já adicionei as 3 unidades da **Máscara Force Hair 500ml** e os 2 **Shampoos Force Hair 500ml** ao seu carrinho! 💖
+
+Seu subtotal está em **R$ 339,50**, então você já pode aproveitar o cupom **PROHALL10** para ganhar 10% de desconto! Quer que eu aplique para você?
+
+Me passa também o seu CEP para calcularmos o frete e o prazo de entrega!
+  [cards exibidos no chat: Máscara Force Hair 500ml (R$ 79,90) | Shampoo Force Hair 500ml (R$ 49,90)]
+
+[15:46:20] Cliente:
+põe mais 1 Tônico Force Hair
+
+[15:46:27] Sofia:
+Prontinho, adicionei 1 **Tônico Force Hair 120ml** ao carrinho! ✨
+
+Seu subtotal agora é de **R$ 364,40**.
+
+Posso aplicar o cupom **PROHALL10** para te dar 10% de desconto? E qual é o seu CEP para calcular o frete?
+  [cards exibidos no chat: Tônico Force Hair 120ml (R$ 24,90)]
+
+[15:46:37] Cliente:
+frete pro 37640-000, expressa e econômica
+
+[15:46:43] Sofia:
+Calculei o frete para o CEP **37640-000**:
+
+- **Econômica**: **GRÁTIS (R$ 0,00)** — prazo de 3 a 5 dias úteis (Total no PIX: **R$ 346,18**)
+- **Expressa**: **R$ 47,90** — prazo de 1 a 2 dias úteis (Total no PIX: **R$ 394,08**)
+
+Lembrando que o seu pedido atinge o valor para usar o cupom **PROHALL10** (10% de desconto)! Quer que eu aplique o cupom e qual frete você prefere escolher? 💕
+
+[15:46:51] Cliente:
+aplica o PROHALL10
+
+[15:46:55] Sofia:
+Cupom **PROHALL10** aplicado com sucesso! Desconto de **-R$ 36,44**. 🎉
+
+Com o cupom e os 5% de desconto no PIX, os totais ficaram assim:
+
+- **Econômica** (GRÁTIS, 3 a 5 dias úteis): **R$ 311,56**
+- **Expressa** (R$ 47,90, 1 a 2 dias úteis): **R$ 359,46**
+
+Qual modalidade de frete você prefere para seguirmos com o pedido?
+
+[15:47:05] Cliente:
+qual o total no PIX?
+
+[15:47:09] Sofia:
+O total no PIX vai depender do frete que você escolher:
+
+- Na **Econômica (GRÁTIS)**: fica em **R$ 311,56**
+- Na **Expressa (R$ 47,90)**: fica em **R$ 359,46**
+
+O valor só dos produtos com o cupom e os 5% do PIX é **R$ 311,56**. Qual das opções de frete você escolhe? ✨
+
+[15:47:28] Cliente:
+Econômica
+
+[15:47:33] Sofia:
+Perfeito, frete **Econômica (GRÁTIS)** registrado! O total no PIX é **R$ 311,56**. 🎉
+
+Para fecharmos o seu pedido, como este é um ambiente de teste, por favor me envie os dados abaixo (pode usar dados fictícios):
+
+- Nome completo
+- E-mail
+- CEP (37640-000)
+- Endereço (rua/avenida)
+- Número
+- Complemento (opcional)
+
+Se preferir preencher em um formulário na tela, é só me avisar que eu abro para você!
+
+[15:47:44] Cliente:
+nome Carla Souza, carla@teste.com, Rua Teste, 100, CEP 37640-000
+
+[15:47:48] Sofia:
+Aqui está o resumo do seu pedido para conferência:
+
+- **Itens**:
+  - 3x Máscara Force Hair 500ml (R$ 239,70)
+  - 2x Shampoo Force Hair 500ml (R$ 99,80)
+  - 1x Tônico Force Hair 120ml (R$ 24,90)
+- **Subtotal**: R$ 364,40
+- **Cupom PROHALL10**: -R$ 36,44
+- **Desconto PIX (5%)**: -R$ 16,40
+- **Frete**: Econômica — GRÁTIS (R$ 0,00) — 3 a 5 dias úteis
+- **Endereço**: Rua Teste, 100, CEP 37640-000
+- **Total no PIX**: **R$ 311,56**
+
+Posso confirmar e gerar o PIX de teste? ✨
+
+[15:47:57] Cliente:
+Sim
+
+[15:48:02] Sofia:
+Pedido realizado com sucesso! 🎉
+
+- **Número do pedido**: **PH-TESTE-000002**
+- **Total no PIX**: **R$ 311,56**
+
+O QR Code e o código "copia e cola" de teste já apareceram na sua tela e têm validade de 15 minutos. Como estamos em um ambiente de teste, basta clicar em **"Simular pagamento"** na tela para concluir! Se precisar de algo mais, estou por aqui. 💕
+
+[15:48:04] Sofia:
+Pagamento confirmado, Carla! 🎉 O pedido PH-TESTE-000002, no valor de R$ 311,56, está pago (simulação: nenhum pagamento real foi feito). A entrega é pela modalidade Econômica, com prazo de 3 a 5 dias úteis. Se quiser dicas de como usar seus produtos, é só me chamar 💜
+
+========================================================================
+Pedidos desta conversa:
+- PH-TESTE-000002 — pago — total R$ 311,56 — PIX-TESTE|PROHALL|PH-TESTE-000002|311.56|NAO-PAGAVEL

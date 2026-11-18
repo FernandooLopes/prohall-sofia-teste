@@ -1,0 +1,160 @@
+Conversa com a Sofia — vendedora virtual da Prohall (AMBIENTE DE TESTE)
+Perfil: Mariana, cliente indecisa (cabelo cacheado, ressecado e com frizz)
+Modelo: gemini-3.8-flash
+Início: 18/11/2026 15:35
+========================================================================
+
+[15:35:13] Sofia:
+Oi! Eu sou a Sofia, consultora de beleza da Prohall 💜
+Me conta: como está o seu cabelo hoje e o que você gostaria de melhorar nele?
+
+[15:35:31] Cliente:
+oi, meu cabelo tá muito ressecado e com frizz, nem sei por onde começar
+
+[15:35:42] Sofia:
+Cabelo ressecado e com frizz pede um bom tratamento de nutrição e um finalizador potente! ✨
+
+O **Kit Extreme Repair** traz tratamento completo de nutrição para recuperar a maleabilidade e o brilho dos fios secos, e o **Finalizador Absolut One** protege do calor, alinha e controla o frizz no dia a dia.
+
+Para eu te indicar certinho: seu cabelo tem alguma química e você costuma secar com secador ou ao natural?
+  [cards exibidos no chat: Kit Extreme Repair Home Care (R$ 139,90) | Finalizador Absolut One 12 em 1 200ml (R$ 29,90)]
+
+[15:36:03] Cliente:
+ele é cacheado
+
+[15:36:10] Sofia:
+Para cachos, a linha **Raízes & Vibes** é maravilhosa! 💖
+
+- **Kit Cachos Raízes & Vibes**: limpa com suavidade sem ressecar e devolve a maciez logo na lavagem.
+- **Gelatina de Cachos**: define e segura o frizz com movimento, sem pesar ou endurecer os fios.
+- **Óleo Absolut Oil**: perfeito para selar as pontas, nutrir e tirar o aspecto ressecado.
+
+Quer que eu já coloque algum deles no seu carrinho para você?
+  [cards exibidos no chat: Kit Shampoo + Condicionador de Cachos Raízes & Vibes (R$ 84,90) | Gelatina de Cachos Raízes & Vibes 450g (R$ 59,90) | Óleo Absolut Oil 60ml (R$ 49,90)]
+
+[15:36:41] Cliente:
+hmm, qual a diferença entre o kit e comprar separado?
+
+[15:36:47] Sofia:
+No caso da linha de cachos, o shampoo e o condicionador só vêm juntos no **Kit Cachos Raízes & Vibes** mesmo, não temos eles avulsos no nosso catálogo! ✨
+
+Já a **Gelatina de Cachos** e o **Óleo Absolut Oil** são itens individuais de finalização e tratamento. O kit completo de shampoo + condicionador já está com um super desconto promocional, saindo por R$ 84,90.
+
+Se você quiser levar o kit com a gelatina, seus cachos já ficam limpos, tratados e super definidos! Quer que eu adicione para você?
+
+[15:37:14] Cliente:
+ok, coloca o kit no carrinho. quanto fica o frete pro CEP 18685-420?
+
+[15:37:23] Sofia:
+Prontinho, adicionei o **Kit Cachos Raízes & Vibes** ao seu carrinho! 🛍️
+
+Para o CEP 18685-420, temos duas opções de frete:
+- **Econômica**: R$ 22,90 (prazo de 3 a 5 dias úteis) — total no PIX: **R$ 103,56**
+- **Expressa**: R$ 35,90 (prazo de 1 a 2 dias úteis) — total no PIX: **R$ 116,56**
+
+Uma dica: se você adicionar a **Gelatina de Cachos** (R$ 59,90) ou outro item que some mais R$ 65,10, você atinge R$ 150,00 e libera o cupom **PROHALL10** com 10% de desconto!
+
+Qual modalidade de frete você prefere seguir?
+
+[15:38:38] Cliente:
+Pode adicionar tambem no carrinho e adicionar esse cupom para mim fazendo favor
+
+[15:38:53] Sofia:
+Adicionei a **Gelatina de Cachos** ao seu carrinho! 💖
+
+O subtotal dos dois ficou em **R$ 144,80**, então faltaram só **R$ 5,20** para atingir os R$ 150,00 mínimos exigidos pelo cupom **PROHALL10**. Por isso o sistema ainda não conseguiu aplicar.
+
+Se você quiser incluir um produtinho em conta para bater o valor e aplicar os 10% de desconto, o **Tônico Force Hair** (R$ 24,90) ou o **Finalizador Absolut One** (R$ 29,90) são ótimas opções!
+
+Quer adicionar um deles ou prefere manter só o Kit e a Gelatina e já escolher o frete (Econômica ou Expressa)?
+  [cards exibidos no chat: Tônico Force Hair 120ml (R$ 24,90) | Finalizador Absolut One 12 em 1 200ml (R$ 29,90)]
+
+[15:39:51] Cliente:
+qual voce recomenda para minha situação?
+
+[15:39:59] Sofia:
+Para o seu caso de ressecamento e frizz, recomendo muito o **Finalizador Absolut One**! ✨
+
+Ele ajuda a desembaraçar, reduz o frizz, repara a fibra e ainda tem proteção térmica (perfeito se você usa difusor ou secador) e proteção contra raios solares. Você pode aplicar nos fios úmidos antes da gelatina para dar uma hidratação extra e potencializar o alinhamento dos cachos.
+
+Quer que eu adicione ele e aplique o cupom **PROHALL10**?
+
+[15:40:09] Cliente:
+Sim, por favor!
+
+[15:40:17] Sofia:
+Prontinho! Adicionei o **Finalizador Absolut One** e o cupom **PROHALL10** foi aplicado com sucesso, dando **-R$ 17,47** de desconto! 🎉
+
+Com os 3 itens, as opções de frete para o CEP 18685-420 ficaram assim:
+- **Econômica**: R$ 29,90 (3 a 5 dias úteis) — total no PIX: **R$ 179,27**
+- **Expressa**: R$ 47,90 (1 a 2 dias úteis) — total no PIX: **R$ 197,27**
+
+Qual opção de frete você prefere para seguirmos com o pedido?
+
+[15:40:50] Cliente:
+Econômica, Vou fazer no pix
+
+[15:40:58] Sofia:
+Frete Econômica selecionado! 📦
+
+Como estamos em um **ambiente de teste**, você pode usar dados fictícios para finalizar. Para eu gerar o seu pedido e o código PIX, por favor me envie:
+
+- **Nome completo**
+- **E-mail**
+- **Endereço (rua/avenida)**
+- **Número**
+- **Complemento** (se houver)
+- Confirmação do **CEP** (18685-420)
+
+*(Se preferir preencher por um formulário na tela em vez de digitar aqui, só me avisar que eu abro para você!)*
+
+[15:41:57] Cliente:
+Nome completo
+Mariana Souza Lima
+E-mail
+mariana@example.com
+Endereço (rua/avenida)
+Rua teste
+Número
+100
+Complemento (se houver)
+Não tem
+Confirmação do CEP (18685-420)
+
+[15:42:03] Sofia:
+Perfeito, Mariana! Aqui está o resumo do seu pedido:
+
+- **Itens**:
+  - 1x Kit Shampoo + Condicionador de Cachos Raízes & Vibes — R$ 84,90
+  - 1x Gelatina de Cachos Raízes & Vibes 450g — R$ 59,90
+  - 1x Finalizador Absolut One 12 em 1 200ml — R$ 29,90
+- **Subtotal**: R$ 174,70
+- **Cupom PROHALL10**: -R$ 17,47
+- **Frete (Econômica, 3 a 5 dias úteis)**: R$ 29,90
+- **Desconto PIX (5% nos produtos)**: -R$ 7,86
+- **Total no PIX**: **R$ 179,27**
+
+- **Entrega**: Rua teste, 100 — CEP 18685-420
+- **Destinatário**: Mariana Souza Lima (mariana@example.com)
+
+Tudo certinho? Posso finalizar o pedido e gerar o PIX de teste para você?
+
+[15:42:11] Cliente:
+Sim, por favor
+
+[15:42:19] Sofia:
+Pedido gerado com sucesso! 🎉
+
+- **Número do pedido**: **PH-TESTE-000001**
+- **Total no PIX**: **R$ 179,27**
+
+O QR Code e o código copia e cola de teste já apareceram na sua tela e têm validade de 15 minutos. Como este é um ambiente de teste, basta clicar no botão **"Simular pagamento"** na tela para concluir a simulação! 💖
+
+Se precisar de qualquer outra ajuda ou dica para os seus cachos, estou por aqui!
+
+[15:42:27] Sofia:
+Pagamento confirmado, Mariana! 🎉 O pedido PH-TESTE-000001, no valor de R$ 179,27, está pago (simulação: nenhum pagamento real foi feito). A entrega é pela modalidade Econômica, com prazo de 3 a 5 dias úteis. Se quiser dicas de como usar seus produtos, é só me chamar 💜
+
+========================================================================
+Pedidos desta conversa:
+- PH-TESTE-000001 — pago — total R$ 179,27 — PIX-TESTE|PROHALL|PH-TESTE-000001|179.27|NAO-PAGAVEL
