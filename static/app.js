@@ -167,3 +167,129 @@ function avisar(texto) {
   clearTimeout(temporizadorAviso);
   temporizadorAviso = setTimeout(() => (aviso.hidden = true), 4500);
 }
+
+// --- Comunicacao com o backend ---
+
+async function chamar(rota, corpo = {}, metodo = "POST") {
+  let url = rota;
+  const opcoes = { method: metodo, headers: {} };
+  const base = { sessao_id: app.sessaoId || "", ultima_mensagem: app.ultimaMensagem };
+  if (metodo === "GET") {
+    url += "?" + new URLSearchParams({ ...base, ...corpo }).toString();
+  } else {
+    opcoes.headers["Content-Type"] = "application/json";
+    opcoes.body = JSON.stringify({ ...base, ...corpo });
+  }
+
+  let resposta;
+  try {
+    resposta = await fetch(url, opcoes);
+  } catch (erro) {
+    throw new ErroApi("rede", "Não consegui falar com o servidor. Confira se ele está rodando.");
+  }
+  let dados = null;
+  try {
+    dados = await resposta.json();
+  } catch (erro) {
+    dados = null;
+  }
+  if (resposta.status === 404 && dados && dados.erro === "sessao_inexistente") {
+    await iniciarSessao(true);
+    throw new ErroApi("sessao_inexistente", "A conversa anterior não existe mais no servidor; comecei uma nova.");
+  }
+  if (dados) aplicar(dados);
+  if (!resposta.ok || !dados || dados.ok === false) {
+    const mensagem = (dados && dados.mensagem) || "Algo deu errado. Tente de novo.";
+    throw new ErroApi((dados && dados.erro) || "erro", mensagem, dados);
+  }
+  return dados;
+}
+
+// aplica na tela o que o servidor devolveu: mensagens novas, estado e acoes
+function aplicar(dados) {
+  for (const mensagem of dados.mensagens || []) {
+    if (mensagem.id <= app.ultimaMensagem) continue;
+    app.ultimaMensagem = mensagem.id;
+    if (mensagem.autor === "cliente" && app.pendentes > 0) {
+      app.pendentes -= 1; // essa ja foi desenhada na hora do envio
+      continue;
+    }
+    desenharMensagem(mensagem);
+  }
+  if (dados.estado) {
+    app.estado = dados.estado;
+    sincronizarPix();
+    desenharCarrinho();
+    if (!$("modal-checkout").hidden) desenharCheckout();
+    if (!$("modal-pix").hidden) desenharPix();
+  }
+  const acoes = dados.acoes || {};
+  if (acoes.abrir_pix) {
+    fecharModal("modal-checkout");
+    abrirPix();
+  } else if (acoes.abrir_checkout) {
+    abrirCheckout();
+  }
+}
+
+// roda uma chamada dos botoes; se falhar mostra o aviso (ou chama aoFalhar)
+async function executar(rota, corpo, aoFalhar) {
+  try {
+    return await chamar(rota, corpo);
+  } catch (erro) {
+    if (aoFalhar) aoFalhar(erro);
+    else avisar(erro.message);
+    return null;
+  }
+}
+
+// --- Chat ---
+
+function mostrarSugestoes() {
+  const area = $("sugestoes");
+  area.replaceChildren();
+  if (app.ultimaMensagem > 1) return; // so no comeco da conversa
+  SUGESTOES.forEach((texto) => {
+    const chip = el("button", "chip", texto);
+    chip.type = "button";
+    chip.addEventListener("click", () => enviarMensagem(texto));
+    area.appendChild(chip);
+  });
+}
+
+async function enviarMensagem(texto) {
+  texto = String(texto || "").trim();
+  if (!texto || app.aguardando) return;
+  app.aguardando = true;
+  $("btn-enviar").disabled = true;
+  $("sugestoes").replaceChildren();
+  const bolha = desenharMensagem({ autor: "cliente", texto, produtos: [] });
+  app.pendentes += 1;
+  const digitando = mostrarDigitando();
+  try {
+    await chamar("/api/chat", { mensagem: texto });
+  } catch (erro) {
+    if (app.pendentes > 0) {
+      app.pendentes -= 1;
+      bolha.classList.add("msg-falhou");
+    }
+    avisar(erro.message);
+  } finally {
+    digitando.remove();
+    app.aguardando = false;
+    $("btn-enviar").disabled = false;
+    $("mensagens").scrollTop = $("mensagens").scrollHeight;
+    $("campo-mensagem").focus();
+  }
+}
+
+async function adicionarAoCarrinho(produto, botao) {
+  botao.disabled = true;
+  const dados = await executar("/api/carrinho/adicionar", { produto_id: produto.id, quantidade: 1 });
+  botao.disabled = false;
+  if (dados) {
+    const original = botao.textContent;
+    botao.textContent = "✓ Adicionado";
+    setTimeout(() => (botao.textContent = original), 1600);
+  }
+}
