@@ -321,6 +321,168 @@
       ],
       "modo_de_uso": "Aplicar em cabelos limpos e úmidos, mecha a mecha, modelar as curvas e finalizar. Não enxaguar. Pode ser usada sozinha ou junto com creme de pentear.",
       "observacoes": "Vegana, sem parabenos e sem petrolatos. Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "shampoo-absolut-one-250ml",
+      "nome": "Shampoo Limpeza Suave, Hidratação dos Fios e Toque Sedoso Com HNR Absolut One 250ml",
+      "nome_curto": "Shampoo Absolut One 250ml",
+      "categoria": "Shampoo",
+      "linha": "Absolut One",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 89.9,
+      "preco_promocional": 44.9,
+      "peso_g": 200,
+      "peso_estimado": false,
+      "estoque": 22,
+      "conteudo": "250 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/shampoo-limpeza-suave-hidratacao-dos-fios-e-toque-sedoso-com-hnr-absolut-one-250ml-prohall-prohall-9300157.jpg?v=1794525612",
+      "url": "https://lojaprohall.com.br/products/shampoo-limpeza-suave-hidratacao-dos-fios-e-toque-sedoso-absolut-one",
+      "indicacao": "Todos os tipos de cabelo; limpa e prepara os fios para as etapas seguintes da rotina.",
+      "beneficios": [
+        "limpeza suave",
+        "ajuda na hidratação natural",
+        "maciez e brilho",
+        "facilita o desembaraço",
+        "controle do frizz"
+      ],
+      "ativos": [
+        "pantenol (pró-vitamina B5)",
+        "biotina (vitamina B7)",
+        "ceramidas",
+        "Metapro KV (aminoácidos vegetais de soja, milho e trigo)"
+      ],
+      "modo_de_uso": "Aplicar nos cabelos molhados, massagear couro cabeludo e fios até formar espuma, enxaguar bem e repetir se necessário.",
+      "observacoes": "Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "kit-extreme-repair-home-care",
+      "nome": "Tratamento Nutritivo: Reparação Absoluta de Fios Opacos Home Care | Extreme Repair",
+      "nome_curto": "Kit Extreme Repair Home Care",
+      "categoria": "Kit",
+      "linha": "Extreme Repair",
+      "uso": "home_care",
+      "kit": true,
+      "preco": 239.9,
+      "preco_promocional": 139.9,
+      "peso_g": 1008,
+      "peso_estimado": false,
+      "estoque": 6,
+      "conteudo": "Kit de tratamento em casa: shampoo, máscara e condicionador ou leave-in Extreme Repair",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/kit-extreme-repair-home-care-extrato-de-macadamia-prohall-prohall-cosmetic-kit-2482339.png?v=1784616383",
+      "url": "https://lojaprohall.com.br/products/kit-extreme-repair-home-care-extrato-de-macadamia",
+      "indicacao": "Todos os tipos de cabelo (lisos, ondulados, cacheados e crespos), com destaque para fios quimicamente tratados, secos, opacos ou danificados.",
+      "beneficios": [
+        "limpeza profunda",
+        "hidratação e nutrição",
+        "recupera a maleabilidade",
+        "controle de frizz e volume",
+        "brilho",
+        "ação antioxidante"
+      ],
+      "ativos": [
+        "extrato de macadâmia (citado no nome do produto)"
+      ],
+      "modo_de_uso": "Lavar com o shampoo; aplicar a máscara nos fios úmidos e deixar agir por 15 minutos; finalizar com o condicionador ou leave-in da linha.",
+      "observacoes": "Linha Home Care (uso em casa). A página não lista os ativos nem o volume de cada item; a composição deve ser consultada na embalagem. Uso externo."
+    },
+    {
+      "id": "btx-blend-repair-1kg",
+      "nome": "Btx Capilar Orgânico Blend Repair 1kg",
+      "nome_curto": "Btx Capilar Blend Repair 1kg",
+      "categoria": "Btx",
+      "linha": "Blend Repair",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 219.9,
+      "preco_promocional": 149.9,
+      "peso_g": 1070,
+      "peso_estimado": false,
+      "estoque": 2,
+      "conteudo": "1 kg",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/btx-capilar-organico-blend-repair-1kg-893377.jpg?v=1742474259",
+      "url": "https://lojaprohall.com.br/products/btx-capilar-organico-blend-repair-1kg",
+      "indicacao": "Todos os tipos de cabelo (liso, ondulado, cacheado e crespo), especialmente quimicamente tratados, danificados, secos, em transição capilar ou de quem segue low/no poo.",
+      "beneficios": [
+        "hidratação e reparação de danos",
+        "redução de frizz e volume",
+        "selagem das cutículas",
+        "brilho e toque sedoso",
+        "ação antioxidante"
+      ],
+      "ativos": [
+        "colágeno hidrolisado",
+        "ácido lático",
+        "óleo de coco",
+        "Lumini System"
+      ],
+      "modo_de_uso": "Lavar com shampoo de limpeza profunda e tirar o excesso de umidade; aplicar mecha por mecha; deixar agir de 40 a 60 minutos; enxaguar completamente e finalizar.",
+      "observacoes": "Uso externo; manter fora do alcance de crianças; suspender em caso de irritação."
+    },
+    {
+      "id": "kit-encorpax",
+      "nome": "Tratamento para Engrossar Fios Finos e Ralos: Reposição de Massa Capilar | Encorpax",
+      "nome_curto": "Kit Encorpax (4 etapas)",
+      "categoria": "Kit",
+      "linha": "Encorpax",
+      "uso": "nao_informado",
+      "kit": true,
+      "preco": 329.9,
+      "preco_promocional": 139.9,
+      "peso_g": 2000,
+      "peso_estimado": false,
+      "estoque": 7,
+      "conteudo": "Kit com 4 produtos Molecular Restore: shampoo, máscara, sérum e leave-in",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/cronograma-para-fios-finos-e-fragilizados-encorpax-prohall-reposicao-de-massa-em-4-etapas-encorpa-restaura-e-devolve-densidade-prohall-prohall-cosmetic-3570374.jpg?v=1776744547",
+      "url": "https://lojaprohall.com.br/products/encorpax-molecular-restore-kit-completo",
+      "indicacao": "Fios finos, ralos e fragilizados que precisam de reposição de massa, resistência e brilho.",
+      "beneficios": [
+        "melhora a elasticidade",
+        "reduz porosidade e frizz",
+        "maciez e brilho",
+        "menos quebra",
+        "proteção contra danos térmicos e mecânicos na finalização"
+      ],
+      "ativos": [
+        "sistema biomolecular de suporte à fibra (Molecular Restore)"
+      ],
+      "modo_de_uso": "Quatro etapas em sequência: shampoo; máscara (deixar agir por 15 minutos); sérum no comprimento e pontas úmidas; leave-in sem enxágue.",
+      "observacoes": "A página não cita ingredientes específicos nem o volume de cada item. Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "finalizador-absolut-one-200ml",
+      "nome": "Finalizador Capilar Protetor Térmico 12 Benefícios em 1: Brilho Intenso | Absolut One",
+      "nome_curto": "Finalizador Absolut One 12 em 1 200ml",
+      "categoria": "Máscara",
+      "linha": "Absolut One",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 119.9,
+      "preco_promocional": 29.9,
+      "peso_g": 250,
+      "peso_estimado": false,
+      "estoque": 35,
+      "conteudo": "200 ml (spray)",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/finalizador-capilar-protetor-termico-12-beneficios-em-1-brilho-intenso-absolut-one-prohall-prohall-cosmetic-mascara-4038850.jpg?v=1793447648",
+      "url": "https://lojaprohall.com.br/products/mascara-em-spray-absolut-one-12-beneficios-em-1-200ml",
+      "indicacao": "Todos os tipos de cabelo, especialmente fios expostos ao calor de secador, prancha e modelador ou ao sol; para a rotina diária.",
+      "beneficios": [
+        "proteção térmica",
+        "proteção contra raios UVA/UVB",
+        "reparação da fibra",
+        "brilho",
+        "redução do frizz",
+        "prevenção de pontas duplas",
+        "facilita o desembaraço",
+        "controle do volume",
+        "ação antioxidante"
+      ],
+      "ativos": [
+        "ácido lático",
+        "pantenol (vitamina B5)"
+      ],
+      "modo_de_uso": "Aplicar em cabelos limpos e úmidos, do comprimento às pontas, evitando a raiz; finalizar com secador ou prancha, ou deixar secar naturalmente.",
+      "observacoes": "No site o tipo do produto aparece como 'Máscara' e o endereço da página fala em 'máscara em spray'; o título o apresenta como finalizador com proteção térmica. Uso externo; suspender em caso de irritação."
     }
   ]
 }
