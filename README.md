@@ -121,6 +121,10 @@ A pasta `conversas/` traz 3 conversas exportadas com perfis diferentes:
 - `02-objetiva.txt`: cliente que já sabe o que quer, com cupom e frete grátis.
 - `03-teste-limites.txt`: cliente que tenta quebrar a Sofia (cupom falso, desconto inventado, preço errado, CEP inválido, pedido fora do escopo).
 
+## Vídeo de demonstração
+
+https://youtu.be/2fvyXFqcpQs
+
 ## O que ficou de fora
 
 - Banco de dados (tudo fica em memória).
