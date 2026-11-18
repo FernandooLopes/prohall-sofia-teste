@@ -62,3 +62,15 @@ def loja(catalogo, relogio):
 @pytest.fixture
 def sessao(loja):
     return loja.nova_sessao()
+
+
+@pytest.fixture
+def cliente():
+    return {
+        "nome": "Maria Teste",
+        "email": "maria@exemplo.com",
+        "cep": "01310-100",
+        "endereco": "Avenida Paulista",
+        "numero": "1000",
+        "complemento": "apto 12",
+    }
