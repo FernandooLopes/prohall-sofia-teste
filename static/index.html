@@ -1,10 +1,113 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>Sofia - Prohall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sofia · Consultora Prohall (ambiente de teste)</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236d2a8c'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <p>Interface em construção. A API já responde em /api/saude.</p>
+  <div class="faixa-teste" role="status">AMBIENTE DE TESTE — nenhum pagamento é real</div>
+
+  <header class="topo">
+    <div class="marca">
+      <div class="avatar" aria-hidden="true">S</div>
+      <div class="marca-texto">
+        <strong>Sofia</strong>
+        <span>Consultora de beleza Prohall</span>
+      </div>
+    </div>
+    <div class="topo-acoes">
+      <button id="btn-exportar" class="btn-leve" type="button" title="Baixar a conversa em texto">Exportar conversa</button>
+      <button id="btn-nova" class="btn-leve" type="button">Nova conversa</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside id="carrinho" class="carrinho" aria-label="Carrinho">
+      <button id="carrinho-barra" class="carrinho-barra" type="button" aria-expanded="false" aria-controls="carrinho-corpo">
+        <span class="barra-esquerda">🛒 <span id="barra-itens">Carrinho vazio</span></span>
+        <span class="barra-direita"><span id="barra-total"></span> <span class="barra-seta" aria-hidden="true">▾</span></span>
+      </button>
+      <div id="carrinho-corpo" class="carrinho-corpo"></div>
+    </aside>
+
+    <section class="chat" aria-label="Conversa com a Sofia">
+      <div id="mensagens" class="mensagens" aria-live="polite"></div>
+      <div id="sugestoes" class="sugestoes"></div>
+      <form id="form-chat" class="entrada" autocomplete="off">
+        <textarea id="campo-mensagem" rows="1" maxlength="2000" placeholder="Escreva sua mensagem…" aria-label="Mensagem para a Sofia"></textarea>
+        <button id="btn-enviar" type="submit" class="btn-primario">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Checkout -->
+  <div id="modal-checkout" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="titulo-checkout">
+    <div class="modal-caixa">
+      <div class="modal-topo">
+        <h2 id="titulo-checkout">Checkout</h2>
+        <button type="button" class="btn-fechar" data-fechar="modal-checkout" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-conteudo">
+        <section>
+          <h3>Resumo do pedido</h3>
+          <div id="checkout-resumo" class="resumo"></div>
+        </section>
+        <section>
+          <h3>Dados para entrega</h3>
+          <p class="alerta-ficticio">⚠️ Use <strong>dados fictícios</strong>. Este é um ambiente de teste: não informe dados reais.</p>
+          <form id="form-checkout" novalidate>
+            <label>Nome completo
+              <input name="nome" type="text" maxlength="100" placeholder="Maria Teste" autocomplete="off">
+              <small class="erro-campo" data-erro="nome"></small>
+            </label>
+            <label>E-mail
+              <input name="email" type="email" maxlength="120" placeholder="maria@exemplo.com" autocomplete="off">
+              <small class="erro-campo" data-erro="email"></small>
+            </label>
+            <div class="linha-campos">
+              <label class="campo-cep">CEP
+                <input name="cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000" autocomplete="off">
+                <small class="erro-campo" data-erro="cep"></small>
+              </label>
+              <label class="campo-numero">Número
+                <input name="numero" type="text" maxlength="10" placeholder="100" autocomplete="off">
+                <small class="erro-campo" data-erro="numero"></small>
+              </label>
+            </div>
+            <label>Endereço
+              <input name="endereco" type="text" maxlength="150" placeholder="Rua das Flores" autocomplete="off">
+              <small class="erro-campo" data-erro="endereco"></small>
+            </label>
+            <label>Complemento <span class="opcional">(opcional)</span>
+              <input name="complemento" type="text" maxlength="80" placeholder="Apto 12" autocomplete="off">
+            </label>
+            <h3>Frete</h3>
+            <div id="checkout-frete" class="opcoes-frete"></div>
+            <p id="checkout-erro" class="erro-geral" hidden></p>
+            <button id="btn-gerar-pix" type="submit" class="btn-primario btn-largo">Gerar PIX de teste</button>
+            <p class="nota">Pagamento somente por PIX, com 5% de desconto sobre os produtos.</p>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIX falso -->
+  <div id="modal-pix" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="titulo-pix">
+    <div class="modal-caixa modal-estreito">
+      <div class="modal-topo">
+        <h2 id="titulo-pix">PIX de teste</h2>
+        <button type="button" class="btn-fechar" data-fechar="modal-pix" aria-label="Fechar">×</button>
+      </div>
+      <div id="pix-conteudo" class="modal-conteudo pix"></div>
+    </div>
+  </div>
+
+  <div id="aviso" class="aviso" role="alert" hidden></div>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>
