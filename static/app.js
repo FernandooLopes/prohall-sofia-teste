@@ -757,3 +757,147 @@ function desenharPix() {
   $("pix-conteudo").replaceChildren(numero, el("div", "pix-valor", pedido.total), ...corpo, resumoDoPedido(pedido));
   atualizarContadores();
 }
+
+// --- Sessao ---
+
+function guardarSessao(id) {
+  try {
+    localStorage.setItem(CHAVE_SESSAO, id);
+  } catch (erro) {
+    // sem armazenamento local a conversa so nao sobrevive ao recarregar
+  }
+}
+
+function sessaoGuardada() {
+  try {
+    return localStorage.getItem(CHAVE_SESSAO);
+  } catch (erro) {
+    return null;
+  }
+}
+
+async function iniciarSessao(forcarNova) {
+  $("mensagens").replaceChildren();
+  app.ultimaMensagem = 0;
+  app.pendentes = 0;
+  app.rascunho = { cupom: "", cep: "" };
+  app.erros = { cupom: "", cep: "" };
+  $("form-checkout").reset();
+  fecharModal("modal-checkout");
+  fecharModal("modal-pix");
+
+  // tenta retomar a conversa guardada; se o servidor nao a conhece, comeca outra
+  let dados = null;
+  const guardada = forcarNova ? null : sessaoGuardada();
+  if (guardada) {
+    try {
+      const resposta = await fetch(`/api/estado?sessao_id=${encodeURIComponent(guardada)}&ultima_mensagem=0`);
+      if (resposta.ok) dados = await resposta.json();
+    } catch (erro) {
+      dados = null;
+    }
+  }
+  if (!dados) {
+    const resposta = await fetch("/api/sessao", { method: "POST" });
+    dados = await resposta.json();
+  }
+  app.sessaoId = dados.estado.sessao_id;
+  guardarSessao(app.sessaoId);
+  aplicar(dados);
+  mostrarSugestoes();
+  if (dados.gemini_configurado === false) {
+    avisar("O servidor está sem a chave do Gemini: preencha o arquivo .env e reinicie para a Sofia responder.");
+  }
+}
+
+// --- Eventos ---
+
+function eventosDoChat() {
+  const campo = $("campo-mensagem");
+  $("form-chat").addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    const texto = campo.value;
+    if (!texto.trim() || app.aguardando) return;
+    campo.value = "";
+    campo.style.height = "auto";
+    enviarMensagem(texto);
+  });
+  // Enter envia, Shift+Enter quebra a linha
+  campo.addEventListener("keydown", (evento) => {
+    if (evento.key === "Enter" && !evento.shiftKey && !evento.isComposing) {
+      evento.preventDefault();
+      $("form-chat").requestSubmit();
+    }
+  });
+  campo.addEventListener("input", () => {
+    campo.style.height = "auto";
+    campo.style.height = Math.min(campo.scrollHeight, 120) + "px";
+  });
+}
+
+function eventosDasJanelas() {
+  $("carrinho-barra").addEventListener("click", () => {
+    const aberto = $("carrinho").classList.toggle("aberto");
+    $("carrinho-barra").setAttribute("aria-expanded", String(aberto));
+  });
+  document.querySelectorAll("[data-fechar]").forEach((botao) => {
+    botao.addEventListener("click", () => fecharModal(botao.dataset.fechar));
+  });
+  document.querySelectorAll(".modal").forEach((modal) => {
+    modal.addEventListener("click", (evento) => {
+      if (evento.target === modal) fecharModal(modal.id);
+    });
+  });
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharModal("modal-checkout");
+      fecharModal("modal-pix");
+    }
+  });
+}
+
+function eventosDoCheckout() {
+  const formulario = $("form-checkout");
+  formulario.addEventListener("submit", enviarCheckout);
+  // ao corrigir um campo, o aviso de erro dele some
+  formulario.addEventListener("input", (evento) => {
+    const campo = evento.target;
+    if (!campo.name) return;
+    campo.classList.remove("campo-invalido");
+    const aviso = formulario.querySelector(`[data-erro="${campo.name}"]`);
+    if (aviso) aviso.textContent = "";
+  });
+  formulario.elements.cep.addEventListener("input", cepDoCheckoutMudou);
+  formulario.elements.cep.addEventListener("change", cepDoCheckoutMudou);
+}
+
+function eventosDoTopo() {
+  $("btn-exportar").addEventListener("click", () => {
+    if (app.sessaoId) window.location.href = `/api/conversa/exportar?sessao_id=${encodeURIComponent(app.sessaoId)}`;
+  });
+
+  // "Nova conversa" pede um segundo clique pra nao apagar sem querer
+  let confirmando = null;
+  const botao = $("btn-nova");
+  botao.addEventListener("click", () => {
+    if (confirmando) {
+      clearTimeout(confirmando);
+      confirmando = null;
+      botao.textContent = "Nova conversa";
+      iniciarSessao(true);
+      return;
+    }
+    botao.textContent = "Confirmar: apagar e recomeçar?";
+    confirmando = setTimeout(() => {
+      confirmando = null;
+      botao.textContent = "Nova conversa";
+    }, 3500);
+  });
+}
+
+eventosDoChat();
+eventosDasJanelas();
+eventosDoCheckout();
+eventosDoTopo();
+setInterval(tique, 500);
+iniciarSessao(false).catch(() => avisar("Não consegui iniciar a conversa. Confira se o servidor está rodando."));
