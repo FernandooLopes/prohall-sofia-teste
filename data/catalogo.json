@@ -1,0 +1,168 @@
+{
+  "fonte": "https://lojaprohall.com.br",
+  "precos_copiados_em": "2026-11-16",
+  "observacoes": [
+    "Nome, preços, imagem, peso e descrição vieram da página/cadastro de cada produto no site (endpoint público /products/<handle>.js da loja).",
+    "preco = preço cheio ('de'); preco_promocional = preço vigente em promoção ('por').",
+    "peso_g é o peso cadastrado no site para envio; nenhum peso precisou ser estimado.",
+    "categoria é o 'tipo de produto' do site; no Shampoo Absolut One o site não informa e foi deduzida do nome.",
+    "estoque é fictício, definido para o teste.",
+    "Os textos de indicação, benefícios, ativos e modo de uso são um resumo fiel da descrição do site, sem acréscimos."
+  ],
+  "produtos": [
+    {
+      "id": "tonico-force-hair-120ml",
+      "nome": "Tônico Capilar de Crescimento Acelerado: Menos Queda | Force Hair 120ml",
+      "nome_curto": "Tônico Force Hair 120ml",
+      "categoria": "Tônico Capilar",
+      "linha": "Force Hair",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 74.9,
+      "preco_promocional": 24.9,
+      "peso_g": 190,
+      "peso_estimado": false,
+      "estoque": 40,
+      "conteudo": "120 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/tonico-force-hair-crescimento-capilar-acelerado-120ml-517706.jpg?v=1742474208",
+      "url": "https://lojaprohall.com.br/products/tonico-force-hair-crescimento-capilar-acelerado-120ml",
+      "indicacao": "Para quem quer reforçar os fios, reduzir queda e quebra e estimular o crescimento.",
+      "beneficios": [
+        "fortalece a estrutura dos fios",
+        "estimula a circulação no couro cabeludo",
+        "ação antioxidante",
+        "reposição vitamínica para mais brilho"
+      ],
+      "ativos": [],
+      "modo_de_uso": "Borrifar uma pequena quantidade nos cabelos e no couro cabeludo, massagear suavemente e finalizar como desejar.",
+      "observacoes": "A página não detalha os ativos (orienta consultar a embalagem). Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "select-one-300ml",
+      "nome": "Select One Um Só Passo 300ml",
+      "nome_curto": "Select One Um Só Passo 300ml",
+      "categoria": "Máscara",
+      "linha": "Select One",
+      "uso": "profissional",
+      "kit": false,
+      "preco": 159.9,
+      "preco_promocional": 79.9,
+      "peso_g": 362,
+      "peso_estimado": false,
+      "estoque": 12,
+      "conteudo": "300 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/Select_One_300ml.png?v=1789577045",
+      "url": "https://lojaprohall.com.br/products/select-one-um-so-passo-300ml",
+      "indicacao": "Todos os tipos de cabelo (lisos, ondulados, cacheados e crespos), com destaque para fios quimicamente tratados; tratamento térmico antifrizz em um só passo.",
+      "beneficios": [
+        "controla frizz e volume excessivo",
+        "hidrata e nutre",
+        "ajuda a reparar danos de químicas",
+        "fortalece a fibra",
+        "ajuda a prevenir quebra e pontas duplas"
+      ],
+      "ativos": [
+        "Lumini System",
+        "óleo de coco",
+        "colágeno hidrolisado",
+        "ácido lático"
+      ],
+      "modo_de_uso": "Fazer teste de alergia e de mecha. Lavar com shampoo; aplicar mecha a mecha no cabelo úmido, a 1 cm da raiz; deixar agir de 60 a 90 minutos; enxaguar só com água; escovar e pranchar em mechas finas (até 230°C, ou 180°C em cabelos descoloridos ou sensibilizados); finalizar com a Equalize Mask.",
+      "observacoes": "A página informa que é de uso profissional. Não é hipoalergênico; manter fora do alcance de crianças; em contato com os olhos, enxaguar com água em abundância."
+    },
+    {
+      "id": "fluido-pro-r-200ml",
+      "nome": "Fluido de Reconstrução Para Cabelo Elástico e Fragilizado | PRO.R 200ml",
+      "nome_curto": "Fluido de Reconstrução PRO.R 200ml",
+      "categoria": "Leave-in",
+      "linha": "PRO.R",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 89.9,
+      "preco_promocional": 39.9,
+      "peso_g": 200,
+      "peso_estimado": false,
+      "estoque": 18,
+      "conteudo": "200 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/fluido-para-reconstrucao-capilar-pror-200ml-prohall-prohall-cosmetic-3862760.jpg?v=1775998811",
+      "url": "https://lojaprohall.com.br/products/fluido-para-reconstrucao-capilar-pro-r-200ml",
+      "indicacao": "Cabelos danificados, porosos, elásticos e fragilizados; foco em recuperar a elasticidade e evitar a quebra.",
+      "beneficios": [
+        "reconstrução profunda",
+        "prevenção da quebra",
+        "hidratação intensa",
+        "brilho e maciez",
+        "praticidade de uso"
+      ],
+      "ativos": [
+        "queratina hidrolisada",
+        "óleo de coco"
+      ],
+      "modo_de_uso": "Aplicar em cabelos limpos e úmidos, borrifando por toda a extensão; deixar agir de 5 a 10 minutos, enxaguar e finalizar.",
+      "observacoes": "O site classifica como leave-in, mas o modo de uso da página pede enxágue. Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "leave-in-secar-sem-frizz-200ml",
+      "nome": "Leave-In Secar sem Frizz: Controle de Frizz e Proteção Sem Uso de Secador 200ml",
+      "nome_curto": "Leave-in Secar sem Frizz 200ml",
+      "categoria": "Leave-in",
+      "linha": "Secar sem Frizz",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 89.9,
+      "preco_promocional": 29.9,
+      "peso_g": 200,
+      "peso_estimado": false,
+      "estoque": 30,
+      "conteudo": "200 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/secar-sem-frizz-controle-de-frizz-e-protecao-sem-uso-de-secador-200ml-prohall-prohall-8465158.png?v=1780390639",
+      "url": "https://lojaprohall.com.br/products/secar-sem-frizz-controle-de-frizz-e-protecao-sem-uso-de-secador-200ml",
+      "indicacao": "Todos os tipos de cabelo; para controlar o frizz e alinhar os fios na secagem natural, sem secador. Pode ser usado em cabelo úmido ou seco.",
+      "beneficios": [
+        "reduz o frizz durante a secagem natural",
+        "ajuda a manter a hidratação",
+        "fios macios, leves, disciplinados e com brilho",
+        "sem enxágue"
+      ],
+      "ativos": [
+        "Tecnologia Lamelar",
+        "pantenol",
+        "ácido hialurônico",
+        "ácido lático"
+      ],
+      "modo_de_uso": "Agitar, borrifar no cabelo úmido do comprimento às pontas, pentear e deixar secar naturalmente, sem passar as mãos durante a secagem. Não enxaguar.",
+      "observacoes": "Uso externo; suspender em caso de irritação."
+    },
+    {
+      "id": "oleo-absolut-oil-60ml",
+      "nome": "Óleo para Reparar Pontas Duplas e Eliminar o Frizz | Absolut Oil 60ml",
+      "nome_curto": "Óleo Absolut Oil 60ml",
+      "categoria": "Óleo Capilar",
+      "linha": "Absolut",
+      "uso": "nao_informado",
+      "kit": false,
+      "preco": 99.9,
+      "preco_promocional": 49.9,
+      "peso_g": 102,
+      "peso_estimado": false,
+      "estoque": 25,
+      "conteudo": "60 ml",
+      "imagem": "https://cdn.shopify.com/s/files/1/0895/5586/1810/files/oleo-reparador-de-pontas-serum-absolut-oil-60ml-160610.jpg?v=1742474227",
+      "url": "https://lojaprohall.com.br/products/oleo-reparador-de-pontas-serum-absolut-oil-60ml",
+      "indicacao": "Todos os tipos de cabelo; para quem busca proteção térmica, nutrição intensa, alinhamento e cuidado com as pontas.",
+      "beneficios": [
+        "hidratação e reparação da fibra",
+        "controle de frizz",
+        "brilho e maciez",
+        "proteção contra calor e agressões ambientais",
+        "ajuda a prevenir pontas duplas"
+      ],
+      "ativos": [
+        "óleo de argan",
+        "blend de silicones aminofuncionais"
+      ],
+      "modo_de_uso": "Aplicar uma pequena quantidade na palma da mão e espalhar do comprimento às pontas, evitando a raiz; finalizar como preferir.",
+      "observacoes": "Uso externo; suspender em caso de irritação."
+    }
+  ]
+}
