@@ -93,6 +93,8 @@ class Sessao:
     cliente: dict = field(default_factory=dict)
     pedidos: list = field(default_factory=list)
     mensagens: list = field(default_factory=list)  # o que aparece no chat
+    historico: list = field(default_factory=list)  # o que foi trocado com o Gemini
+    valores_vistos: set = field(default_factory=set)  # valores em R$ que o modelo ja viu
     _ultima_mensagem: int = 0
 
     def registrar(self, autor, texto, produtos=None):
